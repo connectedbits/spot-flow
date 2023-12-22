@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1wj49ek" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.10.0">
+  <bpmn:collaboration id="CallActivityTest">
+    <bpmn:participant id="CallerPariticpant" name="Caller" processRef="CallerProcess" />
+    <bpmn:participant id="CalleeParticipant" name="Callee" processRef="CalleeProcess" />
+  </bpmn:collaboration>
+  <bpmn:process id="CallerProcess" name="Caller" isExecutable="true">
+    <bpmn:sequenceFlow id="Flow_0pd2qjj" sourceRef="CallerStart" targetRef="CallActivity" />
+    <bpmn:sequenceFlow id="Flow_1i4urdu" sourceRef="CallActivity" targetRef="CallerEnd" />
+    <bpmn:callActivity id="CallActivity" name="Call" calledElement="CalleeProcess">
+      <bpmn:incoming>Flow_0pd2qjj</bpmn:incoming>
+      <bpmn:outgoing>Flow_1i4urdu</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:endEvent id="CallerEnd">
+      <bpmn:incoming>Flow_1i4urdu</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="CallerStart">
+      <bpmn:outgoing>Flow_0pd2qjj</bpmn:outgoing>
+    </bpmn:startEvent>
+  </bpmn:process>
+  <bpmn:process id="CalleeProcess" name="Callee" isExecutable="true">
+    <bpmn:endEvent id="CalleeEnd">
+      <bpmn:incoming>Flow_14g8wdu</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="CalleeStart">
+      <bpmn:outgoing>Flow_11ij2ru</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_11ij2ru" sourceRef="CalleeStart" targetRef="Task" />
+    <bpmn:task id="Task" name="Task">
+      <bpmn:incoming>Flow_11ij2ru</bpmn:incoming>
+      <bpmn:outgoing>Flow_14g8wdu</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_14g8wdu" sourceRef="Task" targetRef="CalleeEnd" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="CallActivityTest">
+      <bpmndi:BPMNShape id="Participant_1jbm1jt_di" bpmnElement="CallerPariticpant" isHorizontal="true">
+        <dc:Bounds x="129" y="52" width="391" height="158" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1i4urdu_di" bpmnElement="Flow_1i4urdu">
+        <di:waypoint x="380" y="130" />
+        <di:waypoint x="432" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pd2qjj_di" bpmnElement="Flow_0pd2qjj">
+        <di:waypoint x="228" y="130" />
+        <di:waypoint x="280" y="130" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1p4mee5_di" bpmnElement="CallActivity">
+        <dc:Bounds x="280" y="90" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1aasn1f_di" bpmnElement="CallerEnd">
+        <dc:Bounds x="432" y="112" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="CallerStart">
+        <dc:Bounds x="192" y="112" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_1bc4ln5_di" bpmnElement="CalleeParticipant" isHorizontal="true">
+        <dc:Bounds x="129" y="250" width="391" height="158" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_14g8wdu_di" bpmnElement="Flow_14g8wdu">
+        <di:waypoint x="380" y="328" />
+        <di:waypoint x="432" y="328" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11ij2ru_di" bpmnElement="Flow_11ij2ru">
+        <di:waypoint x="228" y="328" />
+        <di:waypoint x="280" y="328" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_12q5cae_di" bpmnElement="CalleeEnd">
+        <dc:Bounds x="432" y="310" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1pwc6f8_di" bpmnElement="CalleeStart">
+        <dc:Bounds x="192" y="310" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_19bskyi_di" bpmnElement="Task">
+        <dc:Bounds x="280" y="288" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

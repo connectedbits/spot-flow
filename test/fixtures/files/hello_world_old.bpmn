@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0f2pdni" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:process id="HelloWorld" name="Hello World" isExecutable="true">
+    <bpmn:startEvent id="IntroductionReceived" name="Introduction Received">
+      <bpmn:outgoing>Flow_0ks31e9</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0bzizv0" messageRef="Message_0m05wlg" />
+    </bpmn:startEvent>
+    <bpmn:startEvent id="Start" name="Start">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="greet" label="Say Hello?" type="boolean" defaultValue="true" />
+          <camunda:formField id="cookie" label="Fortune Cookie?" type="boolean" defaultValue="false" />
+        </camunda:formData>
+        <camunda:properties>
+          <camunda:property />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_016qg9x</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="IntroduceYourself" name="Introduce Yourself">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="name" label="Name" type="string" />
+          <camunda:formField id="language" label="Language" type="enum" defaultValue="en">
+            <camunda:value id="en" name="English" />
+            <camunda:value id="es" name="Spanish" />
+            <camunda:value id="fr" name="French" />
+            <camunda:value id="it" name="Italian" />
+            <camunda:value id="ja" name="Japenese" />
+            <camunda:value id="pl" name="Polish" />
+            <camunda:value id="ru" name="Russian" />
+            <camunda:value id="sv" name="Sweedish" />
+          </camunda:formField>
+          <camunda:formField id="formal" label="Formal?" type="boolean" defaultValue="true" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_016qg9x</bpmn:incoming>
+      <bpmn:outgoing>Flow_0f1v8du</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="Timeout" name="after 4 hours" attachedToRef="IntroduceYourself">
+      <bpmn:outgoing>Flow_1n35etg</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_00oxweh">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT4H</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:inclusiveGateway id="Split" name="Split">
+      <bpmn:incoming>Flow_0f1v8du</bpmn:incoming>
+      <bpmn:incoming>Flow_0ks31e9</bpmn:incoming>
+      <bpmn:outgoing>Flow_09yhdyi</bpmn:outgoing>
+      <bpmn:outgoing>Flow_00mppvp</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:endEvent id="End" name="End">
+      <bpmn:incoming>Flow_15lbcry</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:inclusiveGateway id="Join" name="Join">
+      <bpmn:incoming>Flow_1ezhtuc</bpmn:incoming>
+      <bpmn:incoming>Flow_1t20i0c</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xiabfq</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:businessRuleTask id="ChooseGreeting" name="Choose Greeting" camunda:decisionRef="ChooseGreeting">
+      <bpmn:incoming>Flow_00mppvp</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ezhtuc</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:serviceTask id="TellFortune" name="Tell Fortune" camunda:type="external" camunda:topic="tell_fortune">
+      <bpmn:incoming>Flow_09yhdyi</bpmn:incoming>
+      <bpmn:outgoing>Flow_1t20i0c</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1xiabfq" sourceRef="Join" targetRef="SayHello" />
+    <bpmn:sequenceFlow id="Flow_1t20i0c" sourceRef="TellFortune" targetRef="Join" />
+    <bpmn:sequenceFlow id="Flow_09yhdyi" sourceRef="Split" targetRef="TellFortune">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ cookie = true }</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_00mppvp" sourceRef="Split" targetRef="ChooseGreeting">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${ greet = true }</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0f1v8du" sourceRef="IntroduceYourself" targetRef="Split" />
+    <bpmn:sequenceFlow id="Flow_1ezhtuc" sourceRef="ChooseGreeting" targetRef="Join" />
+    <bpmn:sequenceFlow id="Flow_15lbcry" sourceRef="SayHello" targetRef="End" />
+    <bpmn:sequenceFlow id="Flow_016qg9x" sourceRef="Start" targetRef="IntroduceYourself" />
+    <bpmn:sequenceFlow id="Flow_0ks31e9" sourceRef="IntroductionReceived" targetRef="Split" />
+    <bpmn:sequenceFlow id="Flow_1n35etg" sourceRef="Timeout" targetRef="Event_0ni5jx2" />
+    <bpmn:intermediateThrowEvent id="Event_0ni5jx2" name="Times Up!">
+      <bpmn:incoming>Flow_1n35etg</bpmn:incoming>
+      <bpmn:outgoing>Flow_16d8mf1</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0uh3jz0" messageRef="Message_0m6pmdy" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:endEvent id="EndNobodyHome" name="End Nobody Home">
+      <bpmn:incoming>Flow_16d8mf1</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_16d8mf1" sourceRef="Event_0ni5jx2" targetRef="EndNobodyHome" />
+    <bpmn:boundaryEvent id="Event_0c6rvx0" attachedToRef="TellFortune">
+      <bpmn:outgoing>Flow_0dabpty</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0163oj2" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_0dabpty" sourceRef="Event_0c6rvx0" targetRef="EndError" />
+    <bpmn:endEvent id="EndError" name="End Error">
+      <bpmn:incoming>Flow_0dabpty</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_0jhbxqq" />
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="SayHello" name="Say Hello" camunda:type="external" camunda:topic="say_hello">
+      <bpmn:incoming>Flow_1xiabfq</bpmn:incoming>
+      <bpmn:outgoing>Flow_15lbcry</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmn:message id="Message_0m05wlg" name="Message_IntroductionReceived" />
+  <bpmn:message id="Message_0m6pmdy" name="Message_Timeout" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="HelloWorld">
+      <bpmndi:BPMNEdge id="Flow_0dabpty_di" bpmnElement="Flow_0dabpty">
+        <di:waypoint x="570" y="391" />
+        <di:waypoint x="570" y="432" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_16d8mf1_di" bpmnElement="Flow_16d8mf1">
+        <di:waypoint x="458" y="100" />
+        <di:waypoint x="552" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1n35etg_di" bpmnElement="Flow_1n35etg">
+        <di:waypoint x="300" y="162" />
+        <di:waypoint x="300" y="100" />
+        <di:waypoint x="422" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ks31e9_di" bpmnElement="Flow_0ks31e9">
+        <di:waypoint x="188" y="333" />
+        <di:waypoint x="380" y="333" />
+        <di:waypoint x="380" y="220" />
+        <di:waypoint x="415" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_016qg9x_di" bpmnElement="Flow_016qg9x">
+        <di:waypoint x="188" y="220" />
+        <di:waypoint x="250" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15lbcry_di" bpmnElement="Flow_15lbcry">
+        <di:waypoint x="890" y="220" />
+        <di:waypoint x="942" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ezhtuc_di" bpmnElement="Flow_1ezhtuc">
+        <di:waypoint x="620" y="220" />
+        <di:waypoint x="685" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0f1v8du_di" bpmnElement="Flow_0f1v8du">
+        <di:waypoint x="350" y="220" />
+        <di:waypoint x="415" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00mppvp_di" bpmnElement="Flow_00mppvp">
+        <di:waypoint x="465" y="220" />
+        <di:waypoint x="520" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_09yhdyi_di" bpmnElement="Flow_09yhdyi">
+        <di:waypoint x="440" y="245" />
+        <di:waypoint x="440" y="333" />
+        <di:waypoint x="520" y="333" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1t20i0c_di" bpmnElement="Flow_1t20i0c">
+        <di:waypoint x="620" y="333" />
+        <di:waypoint x="710" y="333" />
+        <di:waypoint x="710" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xiabfq_di" bpmnElement="Flow_1xiabfq">
+        <di:waypoint x="735" y="220" />
+        <di:waypoint x="790" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0thbsfx_di" bpmnElement="IntroductionReceived">
+        <dc:Bounds x="152" y="315" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="141" y="358" width="58" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0scr8d7_di" bpmnElement="Start" bioc:stroke="#000" bioc:fill="#fff">
+        <dc:Bounds x="152" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="158" y="245" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_14uaumt_di" bpmnElement="IntroduceYourself">
+        <dc:Bounds x="250" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_168t596_di" bpmnElement="Split" bioc:stroke="#000" bioc:fill="#fff">
+        <dc:Bounds x="415" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="429" y="165" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_17lh60i_di" bpmnElement="End" bioc:stroke="#000" bioc:fill="#fff">
+        <dc:Bounds x="942" y="202" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="950" y="248" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0hjodkn_di" bpmnElement="Join" bioc:stroke="#000" bioc:fill="#fff">
+        <dc:Bounds x="685" y="195" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="700" y="165" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0e4qfhx_di" bpmnElement="ChooseGreeting">
+        <dc:Bounds x="520" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1iohwvm_di" bpmnElement="TellFortune">
+        <dc:Bounds x="520" y="293" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1khdxg3_di" bpmnElement="Event_0ni5jx2">
+        <dc:Bounds x="422" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="416" y="125" width="50" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_17n9d9s_di" bpmnElement="EndNobodyHome">
+        <dc:Bounds x="552" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="540" y="125" width="61" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_17jdxdp_di" bpmnElement="EndError">
+        <dc:Bounds x="552" y="432" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="546" y="475" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1azmedl_di" bpmnElement="SayHello">
+        <dc:Bounds x="790" y="180" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_06gfvtc_di" bpmnElement="Event_0c6rvx0">
+        <dc:Bounds x="552" y="355" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1fmfmzb_di" bpmnElement="Timeout">
+        <dc:Bounds x="282" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="319" y="143" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

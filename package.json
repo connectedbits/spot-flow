@@ -1,0 +1,13 @@
+{
+  "name": "spot_flow",
+  "description": "Spot Flow is a BPMN/DMN workflow gem for Rails apps.",
+  "private": true,
+  "dependencies": {
+    "@connectedbits/dmn-eval-js": "https://github.com/connectedbits/dmn-eval-js.git",
+    "bpmn-moddle": "^8.0.1",
+    "zeebe-bpmn-moddle": "^1.0.0",
+    "dmn-moddle": "^10.0.0",
+    "js-feel": "^1.4.7"
+  },
+  "version": "0.1.0"
+}

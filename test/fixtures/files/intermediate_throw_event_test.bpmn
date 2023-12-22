@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1ap9a0s" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.0">
+  <bpmn:process id="IntermediateThrowEventTest" name="Intermediate Throw Event Test" isExecutable="true">
+    <bpmn:startEvent id="Start" name="Start">
+      <bpmn:outgoing>Flow_0yd7qoo</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="End" name="End">
+      <bpmn:incoming>Flow_0en3ph8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:intermediateThrowEvent id="Throw" name="Throw">
+      <bpmn:incoming>Flow_0yd7qoo</bpmn:incoming>
+      <bpmn:outgoing>Flow_0en3ph8</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1qob7x5" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_0yd7qoo" sourceRef="Start" targetRef="Throw" />
+    <bpmn:sequenceFlow id="Flow_0en3ph8" sourceRef="Throw" targetRef="End" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="IntermediateThrowEventTest">
+      <bpmndi:BPMNEdge id="Flow_0en3ph8_di" bpmnElement="Flow_0en3ph8">
+        <di:waypoint x="281" y="100" />
+        <di:waypoint x="332" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0yd7qoo_di" bpmnElement="Flow_0yd7qoo">
+        <di:waypoint x="188" y="100" />
+        <di:waypoint x="245" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0kyaf7e_di" bpmnElement="Start">
+        <dc:Bounds x="152" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="158" y="125" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0rsw31b_di" bpmnElement="End">
+        <dc:Bounds x="332" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="340" y="125" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1of7bf5_di" bpmnElement="Throw">
+        <dc:Bounds x="245" y="82" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="248" y="125" width="31" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

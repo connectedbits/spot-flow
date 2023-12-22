@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_16865u4" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:process id="BoundaryEventTest" isExecutable="true">
+    <bpmn:startEvent id="Start">
+      <bpmn:outgoing>Flow_1emacgx</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="HostTask" name="Host Task">
+      <bpmn:incoming>Flow_1emacgx</bpmn:incoming>
+      <bpmn:outgoing>Flow_06ushzf</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_1emacgx" sourceRef="Start" targetRef="HostTask" />
+    <bpmn:boundaryEvent id="NonInterrupting" name="Non interupting" cancelActivity="false" attachedToRef="HostTask">
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0kqccc5" />
+    </bpmn:boundaryEvent>
+    <bpmn:boundaryEvent id="Interrupting" name="Interrupting" attachedToRef="HostTask">
+      <bpmn:outgoing>Flow_19q2sjn</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0f3bj7s" />
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="End" name="End">
+      <bpmn:incoming>Flow_06ushzf</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_06ushzf" sourceRef="HostTask" targetRef="End" />
+    <bpmn:endEvent id="EndInterupted" name="End Interupted">
+      <bpmn:incoming>Flow_19q2sjn</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_19q2sjn" sourceRef="Interrupting" targetRef="EndInterupted" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="BoundaryEventTest">
+      <bpmndi:BPMNEdge id="Flow_1emacgx_di" bpmnElement="Flow_1emacgx">
+        <di:waypoint x="215" y="177" />
+        <di:waypoint x="270" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06ushzf_di" bpmnElement="Flow_06ushzf">
+        <di:waypoint x="370" y="177" />
+        <di:waypoint x="432" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19q2sjn_di" bpmnElement="Flow_19q2sjn">
+        <di:waypoint x="320" y="235" />
+        <di:waypoint x="320" y="300" />
+        <di:waypoint x="392" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="Start">
+        <dc:Bounds x="179" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1dsme9d_di" bpmnElement="HostTask">
+        <dc:Bounds x="270" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1vj3e3h_di" bpmnElement="End">
+        <dc:Bounds x="432" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="440" y="202" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_13um3k8_di" bpmnElement="EndInterupted">
+        <dc:Bounds x="392" y="282" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="374" y="325" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1azvu18_di" bpmnElement="NonInterrupting">
+        <dc:Bounds x="302" y="119" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="342" y="103" width="75" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0l1htvq_di" bpmnElement="Interrupting">
+        <dc:Bounds x="302" y="199" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="342" y="242" width="56" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

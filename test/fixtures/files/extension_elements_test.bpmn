@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1cxr0ze" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.17.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.3.0">
+  <bpmn:process id="ZeebeExtensionsTest" name="Zeebe Extensions Test" isExecutable="true">
+    <bpmn:startEvent id="Start" name="Start">
+      <bpmn:extensionElements>
+        <zeebe:properties>
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{ &#34;greeting&#34;: &#34;Hello&#34; }" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_1af1ejk</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1af1ejk" sourceRef="Start" targetRef="UserTask" />
+    <bpmn:userTask id="UserTask" name="User Task">
+      <bpmn:extensionElements>
+        <zeebe:assignmentDefinition assignee="bill@somewhere.com" candidateGroups="maintenance" candidateUsers="bill@somewhere.com jill@somewhere.com" />
+        <zeebe:taskSchedule dueDate="=now() + duration(&#34;PT8H&#34;)" followUpDate="=now() + duration(&#34;PT2D&#34;)" />
+        <zeebe:formDefinition formKey="some_form" />
+        <zeebe:properties>
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{ &#34;first_name&#34;: &#34;John&#34;, &#34;last_name&#34;: &#34;Doe&#34; }" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1af1ejk</bpmn:incoming>
+      <bpmn:outgoing>Flow_03gm2bi</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_03gm2bi" sourceRef="UserTask" targetRef="BusinessRuleTask" />
+    <bpmn:serviceTask id="ServiceTask" name="Service Task">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="service_type" retries="3" />
+        <zeebe:properties>
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{ &#34;response&#34;: { &#34;body&#34;: { &#34;fortune&#34;: &#34;&#34; } } }&#10;" />
+        </zeebe:properties>
+        <zeebe:ioMapping>
+          <zeebe:input source="=first_name + &#34; &#34; + last_name" target="name" />
+          <zeebe:output source="=response.body.fortune" target="fortune" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0pi8qk3</bpmn:incoming>
+      <bpmn:outgoing>Flow_142xjob</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_142xjob" sourceRef="ServiceTask" targetRef="ScriptTask" />
+    <bpmn:scriptTask id="ScriptTask" name="Script Task">
+      <bpmn:extensionElements>
+        <zeebe:script expression="=&#34;Hello &#34; + name + &#34; &#34; + fortune" resultVariable="my_result" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_142xjob</bpmn:incoming>
+      <bpmn:outgoing>Flow_11057uk</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="End" name="End">
+      <bpmn:incoming>Flow_11057uk</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_11057uk" sourceRef="ScriptTask" targetRef="End" />
+    <bpmn:sequenceFlow id="Flow_0pi8qk3" sourceRef="BusinessRuleTask" targetRef="ServiceTask" />
+    <bpmn:businessRuleTask id="BusinessRuleTask" name="Business Rule Task">
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="ChooseGreeting" resultVariable="greeting" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_03gm2bi</bpmn:incoming>
+      <bpmn:outgoing>Flow_0pi8qk3</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ZeebeExtensionsTest">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="Start">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="185" y="142" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_035oq2w_di" bpmnElement="UserTask">
+        <dc:Bounds x="270" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0wdm9si_di" bpmnElement="ServiceTask">
+        <dc:Bounds x="590" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0ibn43x_di" bpmnElement="BusinessRuleTask">
+        <dc:Bounds x="430" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0f2495f_di" bpmnElement="ScriptTask">
+        <dc:Bounds x="750" y="77" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11qxxsx_di" bpmnElement="End">
+        <dc:Bounds x="912" y="99" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="920" y="142" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1af1ejk_di" bpmnElement="Flow_1af1ejk">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03gm2bi_di" bpmnElement="Flow_03gm2bi">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="430" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_142xjob_di" bpmnElement="Flow_142xjob">
+        <di:waypoint x="690" y="117" />
+        <di:waypoint x="750" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_11057uk_di" bpmnElement="Flow_11057uk">
+        <di:waypoint x="850" y="117" />
+        <di:waypoint x="912" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pi8qk3_di" bpmnElement="Flow_0pi8qk3">
+        <di:waypoint x="530" y="117" />
+        <di:waypoint x="590" y="117" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

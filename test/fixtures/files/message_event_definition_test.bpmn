@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_09vp66c" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:process id="MessageEventDefinitionTest" isExecutable="true">
+    <bpmn:startEvent id="Start">
+      <bpmn:outgoing>Flow_0y8jqb6</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0lp28dn" messageRef="Message_1rcr86z" />
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0y8jqb6" sourceRef="Start" targetRef="Catch" />
+    <bpmn:sequenceFlow id="Flow_02no5a3" sourceRef="Catch" targetRef="HostTask" />
+    <bpmn:sequenceFlow id="Flow_1ke9j7b" sourceRef="Throw" targetRef="End" />
+    <bpmn:endEvent id="End">
+      <bpmn:incoming>Flow_1ke9j7b</bpmn:incoming>
+      <bpmn:incoming>Flow_1v9abqz</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0mh1wuc" messageRef="Message_1hf6huw" />
+    </bpmn:endEvent>
+    <bpmn:intermediateThrowEvent id="Throw">
+      <bpmn:incoming>Flow_0ezrngu</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ke9j7b</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0wl5fpu" messageRef="Message_1ugl549" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:intermediateCatchEvent id="Catch">
+      <bpmn:incoming>Flow_0y8jqb6</bpmn:incoming>
+      <bpmn:outgoing>Flow_02no5a3</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_0wej5eq" messageRef="Message_0ixuw6t" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:task id="HostTask" name="Host Task">
+      <bpmn:incoming>Flow_02no5a3</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ezrngu</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:sequenceFlow id="Flow_0ezrngu" sourceRef="HostTask" targetRef="Throw" />
+    <bpmn:sequenceFlow id="Flow_1v9abqz" sourceRef="Boundary" targetRef="End" />
+    <bpmn:boundaryEvent id="Boundary" attachedToRef="HostTask">
+      <bpmn:outgoing>Flow_1v9abqz</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_01p54y6" messageRef="Message_0nn9rhr" />
+    </bpmn:boundaryEvent>
+  </bpmn:process>
+  <bpmn:message id="Message_1rcr86z" name="Message_Start" />
+  <bpmn:message id="Message_0ixuw6t" name="Message_Catch" />
+  <bpmn:message id="Message_0nn9rhr" name="Message_Boundary" />
+  <bpmn:message id="Message_1ugl549" name="Message_Throw" />
+  <bpmn:message id="Message_1hf6huw" name="Message_End" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="MessageEventDefinitionTest">
+      <bpmndi:BPMNEdge id="Flow_1ke9j7b_di" bpmnElement="Flow_1ke9j7b">
+        <di:waypoint x="548" y="97" />
+        <di:waypoint x="592" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_02no5a3_di" bpmnElement="Flow_02no5a3">
+        <di:waypoint x="308" y="97" />
+        <di:waypoint x="360" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0y8jqb6_di" bpmnElement="Flow_0y8jqb6">
+        <di:waypoint x="215" y="97" />
+        <di:waypoint x="272" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ezrngu_di" bpmnElement="Flow_0ezrngu">
+        <di:waypoint x="460" y="97" />
+        <di:waypoint x="512" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1v9abqz_di" bpmnElement="Flow_1v9abqz">
+        <di:waypoint x="410" y="155" />
+        <di:waypoint x="410" y="190" />
+        <di:waypoint x="610" y="190" />
+        <di:waypoint x="610" y="115" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1wzk6qj_di" bpmnElement="Start">
+        <dc:Bounds x="179" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0r5qsvm_di" bpmnElement="Catch">
+        <dc:Bounds x="272" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1f3bztx_di" bpmnElement="HostTask">
+        <dc:Bounds x="360" y="57" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1w30yk6_di" bpmnElement="Throw">
+        <dc:Bounds x="512" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_07zhhin_di" bpmnElement="End">
+        <dc:Bounds x="592" y="79" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1ktof37_di" bpmnElement="Boundary">
+        <dc:Bounds x="392" y="119" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

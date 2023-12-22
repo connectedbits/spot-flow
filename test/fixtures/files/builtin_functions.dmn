@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="Definitions_ChooseGreeting" name="Builtin Functions" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.8.0">
+  <decision id="output" name="Output">
+    <decisionTable id="DecisionTable_1x25309">
+      <input id="Input_1" label="Language">
+        <inputExpression id="InputExpression_1" typeRef="string">
+          <text>name</text>
+        </inputExpression>
+      </input>
+      <output id="Output_1" label="upper case()" name="upper case" typeRef="string" />
+      <rule id="DecisionRule_0tog1vl">
+        <inputEntry id="UnaryTests_16e20ig">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0gsyiyp">
+          <text>upper case(name)</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram>
+      <dmndi:DMNShape dmnElementRef="ChooseGreeting">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</definitions>

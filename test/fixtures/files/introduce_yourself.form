@@ -1,0 +1,124 @@
+{
+  "components": [
+    {
+      "text": "# Introduce Yourself",
+      "label": "Text view",
+      "type": "text",
+      "layout": {
+        "row": "Row_073ajcc",
+        "columns": null
+      },
+      "id": "Field_1s1ff94"
+    },
+    {
+      "label": "Name",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_155nrsk",
+        "columns": null
+      },
+      "id": "Field_1514kfq",
+      "key": "name",
+      "description": "What you'd like to be called."
+    },
+    {
+      "label": "Email",
+      "type": "textfield",
+      "layout": {
+        "row": "Row_0h0qsyt",
+        "columns": null
+      },
+      "id": "Field_19vmb6p",
+      "key": "email",
+      "description": "Where you'd like us to send your message."
+    },
+    {
+      "values": [
+        {
+          "label": "English",
+          "value": "en"
+        },
+        {
+          "label": "Spanish",
+          "value": "es"
+        },
+        {
+          "label": "French",
+          "value": "fr"
+        },
+        {
+          "label": "Italian",
+          "value": "it"
+        },
+        {
+          "label": "Japenese",
+          "value": "ja"
+        },
+        {
+          "label": "Polish",
+          "value": "pl"
+        },
+        {
+          "label": "Russian",
+          "value": "ru"
+        },
+        {
+          "label": "Sweedish",
+          "value": "sv"
+        }
+      ],
+      "label": "Language",
+      "type": "select",
+      "layout": {
+        "row": "Row_0zeiy69",
+        "columns": null
+      },
+      "id": "Field_19ykjrs",
+      "key": "language",
+      "defaultValue": "en",
+      "description": "Which language would you prefer we greet you with."
+    },
+    {
+      "label": "Formal",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_124wbla",
+        "columns": null
+      },
+      "id": "Field_0698g2d",
+      "key": "formal",
+      "description": "Should the greeting be formal?"
+    },
+    {
+      "label": "Fortune",
+      "type": "checkbox",
+      "layout": {
+        "row": "Row_0vemyi1",
+        "columns": null
+      },
+      "id": "Field_1wyzhzy",
+      "key": "cookie",
+      "defaultValue": true,
+      "description": "Would you like us to include a fortune?"
+    },
+    {
+      "action": "submit",
+      "label": "Let's do this!",
+      "type": "button",
+      "layout": {
+        "row": "Row_1kr4max",
+        "columns": null
+      },
+      "id": "Field_0khdvbq"
+    }
+  ],
+  "type": "default",
+  "id": "form_introduce_yourself",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.3.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.17.0"
+  },
+  "schemaVersion": 12
+}

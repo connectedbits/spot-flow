@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_19jpqsi" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.8.0">
+  <bpmn:collaboration id="Collaboration_0gxi7hv">
+    <bpmn:participant id="Participant_0b17zli" name="Embedded Sub Process" processRef="EmbeddedSubProcessParent" />
+    <bpmn:participant id="Participant_1hzzc8n" name="Event Sub Process" processRef="EventSubProcessParent" />
+    <bpmn:participant id="Participant_0lc5rbu" name="Ad Hoc Sub Process" processRef="AdHocSubProcessParent" />
+  </bpmn:collaboration>
+  <bpmn:process id="EmbeddedSubProcessParent" name="Sub Process Test" isExecutable="true">
+    <bpmn:laneSet id="LaneSet_0gqxhnb" />
+    <bpmn:subProcess id="EmbeddedSubProcess">
+      <bpmn:incoming>Flow_10982gl</bpmn:incoming>
+      <bpmn:outgoing>Flow_13icv2y</bpmn:outgoing>
+      <bpmn:startEvent id="StartSub">
+        <bpmn:outgoing>Flow_060c06a</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_060c06a" sourceRef="StartSub" targetRef="Task" />
+      <bpmn:endEvent id="EndSub">
+        <bpmn:incoming>Flow_1fo1abh</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_1fo1abh" sourceRef="Task" targetRef="EndSub" />
+      <bpmn:task id="Task" name="Task">
+        <bpmn:incoming>Flow_060c06a</bpmn:incoming>
+        <bpmn:outgoing>Flow_1fo1abh</bpmn:outgoing>
+      </bpmn:task>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_13icv2y" sourceRef="EmbeddedSubProcess" targetRef="EndEmbedded" />
+    <bpmn:sequenceFlow id="Flow_10982gl" sourceRef="StartEmbedded" targetRef="EmbeddedSubProcess" />
+    <bpmn:endEvent id="EndEmbedded">
+      <bpmn:incoming>Flow_13icv2y</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:startEvent id="StartEmbedded">
+      <bpmn:outgoing>Flow_10982gl</bpmn:outgoing>
+    </bpmn:startEvent>
+  </bpmn:process>
+  <bpmn:process id="EventSubProcessParent" name="Event Sub Process Test" isExecutable="false">
+    <bpmn:startEvent id="StartEvent">
+      <bpmn:outgoing>Flow_1t6v399</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="EndEvent">
+      <bpmn:incoming>Flow_0m9hncv</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:subProcess id="EventSubProcess" triggeredByEvent="true">
+      <bpmn:task id="HandleError" name="Handle Error">
+        <bpmn:incoming>Flow_0g53pnk</bpmn:incoming>
+        <bpmn:outgoing>Flow_00te2xe</bpmn:outgoing>
+      </bpmn:task>
+      <bpmn:endEvent id="Event_1jk7796">
+        <bpmn:incoming>Flow_00te2xe</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0g53pnk" sourceRef="Event_036rrdz" targetRef="HandleError" />
+      <bpmn:sequenceFlow id="Flow_00te2xe" sourceRef="HandleError" targetRef="Event_1jk7796" />
+      <bpmn:startEvent id="Event_036rrdz">
+        <bpmn:outgoing>Flow_0g53pnk</bpmn:outgoing>
+        <bpmn:errorEventDefinition id="ErrorEventDefinition_1mn49uy" />
+      </bpmn:startEvent>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_1t6v399" sourceRef="StartEvent" targetRef="RaiseError" />
+    <bpmn:sequenceFlow id="Flow_0m9hncv" sourceRef="RaiseError" targetRef="EndEvent" />
+    <bpmn:serviceTask id="RaiseError" name="Raise Error">
+      <bpmn:incoming>Flow_1t6v399</bpmn:incoming>
+      <bpmn:outgoing>Flow_0m9hncv</bpmn:outgoing>
+    </bpmn:serviceTask>
+  </bpmn:process>
+  <bpmn:process id="AdHocSubProcessParent" name="Ad Hoc Sub Process Test" isExecutable="false">
+    <bpmn:startEvent id="StartAdHoc">
+      <bpmn:outgoing>Flow_0pciazf</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:adHocSubProcess id="AdHocSubProcess">
+      <bpmn:incoming>Flow_0pciazf</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xk4qva</bpmn:outgoing>
+      <bpmn:task id="AdHocA" name="Ad Hoc A" />
+      <bpmn:task id="AdHocB" name="Ad Hoc B" />
+    </bpmn:adHocSubProcess>
+    <bpmn:sequenceFlow id="Flow_0pciazf" sourceRef="StartAdHoc" targetRef="AdHocSubProcess" />
+    <bpmn:sequenceFlow id="Flow_1xk4qva" sourceRef="AdHocSubProcess" targetRef="EndAdHoc" />
+    <bpmn:endEvent id="EndAdHoc">
+      <bpmn:incoming>Flow_1xk4qva</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_0gxi7hv">
+      <bpmndi:BPMNShape id="Participant_0b17zli_di" bpmnElement="Participant_0b17zli" isHorizontal="true">
+        <dc:Bounds x="125" y="54" width="565" height="196" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_13icv2y_di" bpmnElement="Flow_13icv2y">
+        <di:waypoint x="580" y="149" />
+        <di:waypoint x="622" y="149" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10982gl_di" bpmnElement="Flow_10982gl">
+        <di:waypoint x="215" y="149" />
+        <di:waypoint x="260" y="149" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_144ggy3_di" bpmnElement="EndEmbedded">
+        <dc:Bounds x="622" y="131" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEmbedded">
+        <dc:Bounds x="179" y="131" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_18wubo9_di" bpmnElement="EmbeddedSubProcess" isExpanded="true">
+        <dc:Bounds x="260" y="77" width="320" height="143" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1fo1abh_di" bpmnElement="Flow_1fo1abh">
+        <di:waypoint x="470" y="150" />
+        <di:waypoint x="512" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_060c06a_di" bpmnElement="Flow_060c06a">
+        <di:waypoint x="328" y="150" />
+        <di:waypoint x="370" y="150" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_10fy300_di" bpmnElement="Task">
+        <dc:Bounds x="370" y="110" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0llya1d_di" bpmnElement="StartSub">
+        <dc:Bounds x="292" y="132" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0wasbhq_di" bpmnElement="EndSub">
+        <dc:Bounds x="512" y="132" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_1hzzc8n_di" bpmnElement="Participant_1hzzc8n" isHorizontal="true">
+        <dc:Bounds x="125" y="290" width="565" height="310" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1t6v399_di" bpmnElement="Flow_1t6v399">
+        <di:waypoint x="218" y="360" />
+        <di:waypoint x="370" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0m9hncv_di" bpmnElement="Flow_0m9hncv">
+        <di:waypoint x="470" y="360" />
+        <di:waypoint x="622" y="360" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1abyeq2_di" bpmnElement="StartEvent">
+        <dc:Bounds x="182" y="342" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_11df5al_di" bpmnElement="EndEvent">
+        <dc:Bounds x="622" y="342" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1mmzcl9_di" bpmnElement="RaiseError">
+        <dc:Bounds x="370" y="320" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00hnkjp_di" bpmnElement="EventSubProcess" isExpanded="true">
+        <dc:Bounds x="235" y="430" width="350" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0g53pnk_di" bpmnElement="Flow_0g53pnk">
+        <di:waypoint x="311" y="500" />
+        <di:waypoint x="370" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00te2xe_di" bpmnElement="Flow_00te2xe">
+        <di:waypoint x="470" y="500" />
+        <di:waypoint x="527" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1jk7796_di" bpmnElement="Event_1jk7796">
+        <dc:Bounds x="527" y="482" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ht6brt_di" bpmnElement="HandleError">
+        <dc:Bounds x="370" y="460" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0om5og2_di" bpmnElement="Event_036rrdz">
+        <dc:Bounds x="275" y="482" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Participant_0lc5rbu_di" bpmnElement="Participant_0lc5rbu" isHorizontal="true">
+        <dc:Bounds x="125" y="640" width="565" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0pciazf_di" bpmnElement="Flow_0pciazf">
+        <di:waypoint x="218" y="740" />
+        <di:waypoint x="270" y="740" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xk4qva_di" bpmnElement="Flow_1xk4qva">
+        <di:waypoint x="560" y="740" />
+        <di:waypoint x="622" y="740" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_066rqed_di" bpmnElement="StartAdHoc">
+        <dc:Bounds x="182" y="722" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1azq2ue_di" bpmnElement="EndAdHoc">
+        <dc:Bounds x="622" y="722" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0locbdk_di" bpmnElement="AdHocSubProcess" isExpanded="true">
+        <dc:Bounds x="270" y="670" width="290" height="140" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1x4gaox_di" bpmnElement="AdHocA">
+        <dc:Bounds x="300" y="700" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1lmx12u_di" bpmnElement="AdHocB">
+        <dc:Bounds x="430" y="700" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
