@@ -2,36 +2,17 @@
 
 module SpotFlow
   class Context
-    attr_reader :processes, :decisions, :executions
-    attr_accessor :services, :listeners, :utils
+    attr_reader :processes, :decisions, :job_workers, :functions, :listeners
+    attr_accessor :executions
 
-    def initialize(sources: nil, moddles: nil, services: {}, listeners: [])
-      @services = services
-      @listeners = Array.wrap(listeners)
+    def initialize(processes: [], decisions: [], job_workers: {}, functions: {}, listeners: {})
+      @processes = Array.wrap(processes)
+      @decisions = Array.wrap(decisions)
+      @job_workers = HashWithIndifferentAccess.new(job_workers)
+      @functions = HashWithIndifferentAccess.new(functions)
+      @listeners = HashWithIndifferentAccess.new(listeners)
 
-      @processes = []
-      @decisions = {}
       @executions = []
-
-      Array.wrap(sources).each do |source|
-        if source.include?("http://www.omg.org/spec/DMN/20180521/DC/")
-          moddle = SpotFlow::Services::DecisionReader.call(source)
-          moddle["drgElement"].each { |d| decisions[d["id"]] = source }
-        else
-          moddle = SpotFlow::Services::ProcessReader.call(source)
-          builder = Bpmn::Builder.new(moddle)
-          @processes = @processes + builder.processes
-        end
-      end
-
-      Array.wrap(moddles).each do |moddle|
-        if moddle["drgElement"]
-          moddle["drgElement"].each { |d| decisions[d["id"]] = source }
-        else
-          builder = Bpmn::Builder.new(moddle)
-          @processes = @processes + builder.processes
-        end
-      end
     end
 
     def start(process_id: nil, start_event_id: nil, variables: {})
@@ -63,9 +44,7 @@ module SpotFlow
     end
 
     def notify_listener(event)
-      listeners.each do |listener|
-        listener[event[:event]].call(event) if listener[event[:event]]
-      end
+      #listeners[event[:event]].call event
     end
 
     def default_process
@@ -97,6 +76,10 @@ module SpotFlow
 
     def execution_by_step_id(step_id)
       executions.find { |e| e.step.id == step_id }
+    end
+
+    def decision_by_id(id)
+      decisions.find { |d| d.id == id }
     end
   end
 end

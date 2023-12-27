@@ -182,7 +182,7 @@ module SpotFlow
     end
 
     def evaluate_expression(expression, variables: parent.variables)
-      SpotFlow::Services::ExpressionEvaluator.call(expression:, variables:)
+      SpotFeel.eval(expression.delete_prefix("="), context: variables)
     end
 
     def run_automated_tasks

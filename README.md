@@ -13,13 +13,14 @@ The engine executes business processes like [this one](/test/fixtures/files/hell
 To start the process, initialize Spot Flow with the BPMN source, then call `start`.
 
 ```ruby
-process = SpotFlow.new(File.read("hello_world.bpmn")).start
+processes = SpotFlow.processes_from_xml(File.read("hello_world.bpmn"))
+execution = SpotFlow.new(processes:).start
 ```
 
 The 'HelloWorld' process begins at the 'Start' event and waits when it reaches the 'SayHello' service task. It's often useful to print the process state to the console.
 
 ```ruby
-process.print
+execution.print
 ```
 
 ```
@@ -33,22 +34,23 @@ It's common to save the state the process until a task is complete. For example,
 
 ```ruby
 # Returns a hash of the process state for saving in a database.
-execution_state = process.serialize
+execution_state = execution.serialize
 
 # Restores the process from the execution state.
-process = SpotFlow.new(File.read("hello_world.bpmn")).restore(execution_state)
+processes = SpotFlow.processes_from_xml(File.read("hello_world.bpmn"))
+execution = SpotFlow.new(processes:).restore(execution_state)
 ```
 
 After the task is completed, the waiting step is sent a `signal` with result.
 
 ```ruby
-step = process.step_by_element_id("SayHello")
+step = execution.step_by_element_id("SayHello")
 step.signal(message: "Hello World!")
 ```
 
 Now the 'SayHello' task is completed, it's result is merged into the process variables, and the process continues to the 'End' event.
 
-```
+```ruby
 HelloWorld completed *
 
 {

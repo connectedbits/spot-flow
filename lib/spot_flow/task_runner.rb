@@ -25,9 +25,9 @@ module SpotFlow
   class ServiceTaskRunner < TaskRunner
 
     def call
-      service_key = execution.step.service_key
-      raise ExecutionError.new("A service key is required for a Service Task") unless service_key
-      service = context.services[service_key.to_sym]
+      task_definition_type = execution.step.task_definition_type
+      raise ExecutionError.new("A task definition type is required for a Service Task") unless task_definition_type
+      service = context.services[task_definition_type.to_sym]
       if service.present?
         result = service.call(execution, variables)
         execution.signal(result)

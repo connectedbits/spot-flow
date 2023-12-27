@@ -2,7 +2,6 @@
 
 module SpotFlow
   module Zeebe
-
     class AssignmentDefinition
       attr_accessor :assignee, :candidate_groups, :candidate_users
 
