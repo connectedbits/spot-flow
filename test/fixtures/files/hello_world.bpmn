@@ -14,16 +14,15 @@
       <bpmn:incoming>Flow_1doumjv</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_1doumjv" sourceRef="SayHello" targetRef="End" />
-    <bpmn:serviceTask id="SayHello" name="Say Hello">
+    <bpmn:task id="SayHello" name="Say Hello">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="say_hello" />
         <zeebe:properties>
           <zeebe:property name="camundaModeler:exampleOutputJson" value="{ &#34;message&#34;: &#34;Hello Eric&#34; }" />
         </zeebe:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0zlro9p</bpmn:incoming>
       <bpmn:outgoing>Flow_1doumjv</bpmn:outgoing>
-    </bpmn:serviceTask>
+    </bpmn:task>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="HelloWorld">
@@ -39,9 +38,8 @@
           <dc:Bounds x="440" y="142" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0ikv6ss_di" bpmnElement="SayHello">
+      <bpmndi:BPMNShape id="Activity_1nroa49_di" bpmnElement="SayHello">
         <dc:Bounds x="270" y="77" width="100" height="80" />
-        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0zlro9p_di" bpmnElement="Flow_0zlro9p">
         <di:waypoint x="215" y="117" />
