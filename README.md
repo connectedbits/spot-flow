@@ -64,9 +64,9 @@ HelloWorld completed *
 
 ### Kitchen Sink
 
-The previous example is a simple process with a single task, but BPMN can express more complex workflows.
+The previous example is a simple process with a single task, but BPMN can express more [complex workflows](/test/fixtures/files/kitchen_sink.bpmn).
 
-TODO: Add a kitchen sink example.
+![Example](test/fixtures/files/kitchen_sink.png)
 
 ## Documentation
 
