@@ -8,7 +8,7 @@ Spot Flow uses [Spot Feel](https://github.com/connectedbits/spot-feel) to evalua
 
 The engine executes business processes like [this one](/test/fixtures/files/hello_world.bpmn).
 
-![Example](test/fixtures/files/hello_world.png) { width: 400px; }
+<img src="test/fixtures/files/hello_world.png" alt="Hello World BPMN" style="width:400px;"/>
 
 To start the process, initialize Spot Flow with the BPMN source, then call `start`.
 
