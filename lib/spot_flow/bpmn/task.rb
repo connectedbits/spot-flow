@@ -55,7 +55,7 @@ module SpotFlow
         execution.wait
       end
 
-      def task_definition_type
+      def task_type
         extension_elements&.task_definition&.type
       end
     end

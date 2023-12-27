@@ -1,182 +1,183 @@
-# # frozen_string_literal: true
+# frozen_string_literal: true
 
-# require "test_helper"
+require "test_helper"
 
-# module SpotFlow
-#   module Bpmn
-#     describe StartEvent do
-#       let(:source) { fixture_source("start_event_test.bpmn") }
-#       let(:context) { SpotFlow.new(source) }
+module SpotFlow
+  module Bpmn
+    describe StartEvent do
+      let(:processes) { SpotFlow.processes_from_xml(fixture_source("start_event_test.bpmn")) }
+      let(:context) { SpotFlow.new(processes:) }
 
-#       describe :definitions do
-#         let(:process) { context.process_by_id("StartEventTest") }
-#         let(:start_event) { process.element_by_id("Start") }
+      describe :definitions do
+        let(:process) { context.process_by_id("StartEventTest") }
+        let(:start_event) { process.element_by_id("Start") }
 
-#         it "should parse start events" do
-#           _(start_event).wont_be_nil
-#         end
-#       end
+        it "should parse start events" do
+          _(start_event).wont_be_nil
+        end
+      end
 
-#       describe :execution do
-#         let(:process) { @process }
-#         let(:start_event) { process.child_by_step_id("Start") }
+      describe :execution do
+        before { @execution = context.start }
 
-#         before { @process = SpotFlow.new(source).start }
+        let(:execution) { @execution }
+        let(:start_event) { execution.child_by_step_id("Start") }
 
-#         it "should start the process" do
-#           _(process.completed?).must_equal true
-#           _(start_event.completed?).must_equal true
-#         end
-#       end
-#     end
+        it "should start the process" do
+          _(execution.completed?).must_equal true
+          _(start_event.completed?).must_equal true
+        end
+      end
+    end
 
-#     describe IntermediateCatchEvent do
-#       let(:source) { fixture_source("intermediate_catch_event_test.bpmn") }
-#       let(:context) { SpotFlow.new(source) }
+    describe IntermediateCatchEvent do
+      let(:processes) { SpotFlow.processes_from_xml(fixture_source("intermediate_catch_event_test.bpmn")) }
+      let(:context) { SpotFlow.new(processes:) }
 
-#       describe :definitions do
-#         let(:process) { context.process_by_id("IntermediateCatchEventTest") }
-#         let(:catch_event) { process.element_by_id("Catch") }
-#       end
+      describe :definitions do
+        let(:process) { context.process_by_id("IntermediateCatchEventTest") }
+        let(:catch_event) { process.element_by_id("Catch") }
+      end
 
-#       describe :execution do
-#         let(:process) { @process }
-#         let(:catch_event) { process.child_by_step_id("Catch") }
+      describe :execution do
+        before { @execution = context.start }
 
-#         before { @process = SpotFlow.new(source).start }
-#         it "should wait at the catch event" do
-#           _(process.started?).must_equal true
-#           _(catch_event.waiting?).must_equal true
-#         end
+        let(:execution) { @execution }
+        let(:catch_event) { execution.child_by_step_id("Catch") }
 
-#         describe :signal do
-#           before { catch_event.signal }
+        it "should wait at the catch event" do
+          _(execution.started?).must_equal true
+          _(catch_event.waiting?).must_equal true
+        end
 
-#           it "should end the process" do
-#             _(process.completed?).must_equal true
-#             _(catch_event.completed?).must_equal true
-#           end
-#         end
-#       end
-#     end
+        describe :signal do
+          before { catch_event.signal }
 
-#     describe IntermediateThrowEvent do
-#       let(:source) { fixture_source("intermediate_throw_event_test.bpmn") }
-#       let(:context) { SpotFlow.new(source) }
+          it "should end the process" do
+            _(execution.completed?).must_equal true
+            _(catch_event.completed?).must_equal true
+          end
+        end
+      end
+    end
 
-#       describe :definitions do
-#         let(:process) { context.process_by_id("IntermediateThrowEventTest") }
-#         let(:throw_event) { process.element_by_id("Throw") }
-#       end
+    describe IntermediateThrowEvent do
+      let(:processes) { SpotFlow.processes_from_xml(fixture_source("intermediate_throw_event_test.bpmn")) }
+      let(:context) { SpotFlow.new(processes:) }
 
-#       describe :execution do
-#         let(:process) { @process }
-#         let(:throw_event) { process.child_by_step_id("Throw") }
+      describe :definitions do
+        let(:process) { context.process_by_id("IntermediateThrowEventTest") }
+        let(:throw_event) { process.element_by_id("Throw") }
+      end
 
-#         before { @process = SpotFlow.new(source).start }
+      describe :execution do
+        before { @execution = context.start }
 
-#         it "should throw then end the process" do
-#           _(process.completed?).must_equal true
-#           _(throw_event.completed?).must_equal true
-#         end
-#       end
-#     end
+        let(:execution) { @execution }
+        let(:throw_event) { execution.child_by_step_id("Throw") }
 
-#     describe BoundaryEvent do
-#       let(:source) { fixture_source("boundary_event_test.bpmn") }
-#       let(:context) { SpotFlow.new(source) }
+        it "should throw then end the process" do
+          _(execution.completed?).must_equal true
+          _(throw_event.completed?).must_equal true
+        end
+      end
+    end
 
-#       describe :definition do
-#         let(:process) { context.process_by_id("BoundaryEventTest") }
-#         let(:start_event) { process.element_by_id("Start") }
-#         let(:host_task) { process.element_by_id("HostTask") }
-#         let(:non_interrupting_event) { process.element_by_id("NonInterrupting") }
-#         let(:interrupting_event) { process.element_by_id("Interrupting") }
-#         let(:end_event) { process.element_by_id("End") }
-#         let(:end_interrupted_event) { process.element_by_id("EndInterrupted") }
+    describe BoundaryEvent do
+      let(:processes) { SpotFlow.processes_from_xml(fixture_source("boundary_event_test.bpmn")) }
+      let(:context) { SpotFlow.new(processes:) }
 
-#         it "should attach boundary to host" do
-#           _(host_task.attachments.present?).must_equal true
-#           _(host_task.attachments).must_equal [non_interrupting_event, interrupting_event]
-#         end
-#       end
+      describe :definition do
+        let(:process) { context.process_by_id("BoundaryEventTest") }
+        let(:start_event) { process.element_by_id("Start") }
+        let(:host_task) { process.element_by_id("HostTask") }
+        let(:non_interrupting_event) { process.element_by_id("NonInterrupting") }
+        let(:interrupting_event) { process.element_by_id("Interrupting") }
+        let(:end_event) { process.element_by_id("End") }
+        let(:end_interrupted_event) { process.element_by_id("EndInterrupted") }
 
-#       describe :execution do
-#         let(:process) { @process }
-#         let(:start_event) { process.child_by_step_id("Start") }
-#         let(:host_task) { process.child_by_step_id("HostTask") }
-#         let(:non_interrupting_event) { process.child_by_step_id("NonInterrupting") }
-#         let(:interrupting_event) { process.child_by_step_id("Interrupting") }
-#         let(:end_event) { process.child_by_step_id("End") }
-#         let(:end_interrupted_event) { process.child_by_step_id("EndInterrupted") }
+        it "should attach boundary to host" do
+          _(host_task.attachments.present?).must_equal true
+          _(host_task.attachments).must_equal [non_interrupting_event, interrupting_event]
+        end
+      end
 
-#         before { @process = SpotFlow.new(source).start }
+      describe :execution do
+        before { @execution = context.start }
 
-#         it "should create boundary events" do
-#           _(process.started?).must_equal true
-#           _(host_task.waiting?).must_equal true
-#           _(non_interrupting_event).wont_be_nil
-#           _(interrupting_event).wont_be_nil
-#         end
+        let(:execution) { @execution }
+        let(:start_event) { execution.child_by_step_id("Start") }
+        let(:host_task) { execution.child_by_step_id("HostTask") }
+        let(:non_interrupting_event) { execution.child_by_step_id("NonInterrupting") }
+        let(:interrupting_event) { execution.child_by_step_id("Interrupting") }
+        let(:end_event) { execution.child_by_step_id("End") }
+        let(:end_interrupted_event) { execution.child_by_step_id("EndInterrupted") }
 
-#         describe :happy_path do
-#           before { host_task.signal }
+        it "should create boundary events" do
+          _(execution.started?).must_equal true
+          _(host_task.waiting?).must_equal true
+          _(non_interrupting_event).wont_be_nil
+          _(interrupting_event).wont_be_nil
+        end
 
-#           it "should complete the process" do
-#             _(process.completed?).must_equal true
-#             _(host_task.completed?).must_equal true
-#             _(non_interrupting_event.terminated?).must_equal true
-#             _(interrupting_event.terminated?).must_equal true
-#           end
-#         end
+        describe :happy_path do
+          before { host_task.signal }
 
-#         describe :non_interrupting do
-#           before { non_interrupting_event.signal }
+          it "should complete the process" do
+            _(execution.completed?).must_equal true
+            _(host_task.completed?).must_equal true
+            _(non_interrupting_event.terminated?).must_equal true
+            _(interrupting_event.terminated?).must_equal true
+          end
+        end
 
-#           it "should not terminate host task" do
-#             _(host_task.waiting?).must_equal true
-#             _(non_interrupting_event.completed?).must_equal true
-#             _(interrupting_event.waiting?).must_equal true
-#           end
-#         end
+        describe :non_interrupting do
+          before { non_interrupting_event.signal }
 
-#         describe :interrupting do
-#           before { interrupting_event.signal }
+          it "should not terminate host task" do
+            _(host_task.waiting?).must_equal true
+            _(non_interrupting_event.completed?).must_equal true
+            _(interrupting_event.waiting?).must_equal true
+          end
+        end
 
-#           it "should terminate host task" do
-#             _(process.ended?).must_equal true
-#             _(host_task.terminated?).must_equal true
-#             _(non_interrupting_event.terminated?).must_equal true
-#             _(interrupting_event.ended?).must_equal true
-#           end
-#         end
-#       end
-#     end
+        describe :interrupting do
+          before { interrupting_event.signal }
 
-#     describe EndEvent do
-#       let(:source) { fixture_source("end_event_test.bpmn") }
-#       let(:context) { SpotFlow.new(source) }
+          it "should terminate host task" do
+            _(execution.ended?).must_equal true
+            _(host_task.terminated?).must_equal true
+            _(non_interrupting_event.terminated?).must_equal true
+            _(interrupting_event.ended?).must_equal true
+          end
+        end
+      end
+    end
 
-#       describe :definitions do
-#         let(:process) { context.process_by_id("EndEventTest") }
-#         let(:end_event) { process.element_by_id("End") }
+    describe EndEvent do
+      let(:processes) { SpotFlow.processes_from_xml(fixture_source("end_event_test.bpmn")) }
+      let(:context) { SpotFlow.new(processes:) }
 
-#         it "should parse end events" do
-#           _(end_event).wont_be_nil
-#         end
-#       end
+      describe :definitions do
+        let(:process) { context.process_by_id("EndEventTest") }
+        let(:end_event) { process.element_by_id("End") }
 
-#       describe :execution do
-#         let(:process) { @process }
-#         let(:end_event) { process.child_by_step_id("End") }
+        it "should parse end events" do
+          _(end_event).wont_be_nil
+        end
+      end
 
-#         before { @process = SpotFlow.new(source).start }
+      describe :execution do
+        before { @execution = context.start }
 
-#         it "should end the process" do
-#           _(process.completed?).must_equal true
-#           _(process.completed?).must_equal true
-#         end
-#       end
-#     end
-#   end
-# end
+        let(:execution) { @execution }
+        let(:end_event) { execution.child_by_step_id("End") }
+
+        it "should end the process" do
+          _(execution.completed?).must_equal true
+          _(execution.completed?).must_equal true
+        end
+      end
+    end
+  end
+end

@@ -8,11 +8,12 @@ module SpotFlow
       let(:source) { fixture_source("execution_test.bpmn") }
       let(:listeners) {
         {
-          started:  proc { |event| log.push event },
-          waited:   proc { |event| log.push event },
-          ended:    proc { |event| log.push event },
-          taken:    proc { |event| log.push event },
-          thrown:   proc { |event| log.push event },
+          execution_started:    proc { |_args| log.push "execution started" },
+          execution_waited:     proc { |_args| log.push "execution waited" },
+          execution_ended:      proc { |_args| log.push "execution ended" },
+          flow_taken:           proc { |_args, _sequence_flow| log.push "flow taken" },
+          message_thrown:       proc { |_args, message_name| log.push "message #{message_name} thrown" },
+          error_thrown:         proc { |_args, error_name| log.push "error #{error_name} thrown" },
         }
       }
       let(:context) { Context.new(sources: source, listeners: listeners) }
@@ -25,9 +26,9 @@ module SpotFlow
         @process = SpotFlow.new(processes:, listeners:).start
       end
 
-      # it "should call the listener" do
-      #   _(log.last[:event]).must_equal :waited
-      # end
+      it "should call the listener" do
+        _(log.last).must_equal "execution waited"
+      end
     end
   end
 end

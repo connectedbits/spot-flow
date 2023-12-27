@@ -103,14 +103,14 @@ module SpotFlow
       @status = "started"
       @started_at = Time.zone.now
       map_input_variables if step&.input_mappings&.present?
-      context.notify_listener({ event: :started, execution: self })
+      context.notify_listener(:execution_started, execution: self)
       step.attachments.each { |attachment| parent.execute_step(attachment, attached_to: self) } if step.is_a?(Bpmn::Activity)
       continue
     end
 
     def wait
       @status = "waiting"
-      context.notify_listener({ event: :waited, execution: self })
+      context.notify_listener(:execution_waited, execution: self)
     end
 
     def continue
@@ -127,7 +127,7 @@ module SpotFlow
       map_output_variables if step&.output_mappings&.present?
       parent.variables.merge!(variables) if parent && variables.present?
       @ended_at = Time.zone.now
-      context.notify_listener({ event: :ended, execution: self })
+      context.notify_listener(:execution_ended, execution: self)
       children.each { |child| child.terminate unless child.ended? }
       parent.children.each { |child| child.terminate if child.attached_to == self && child.waiting? } if parent
       parent.has_ended(self) if parent && notify_parent
@@ -141,7 +141,7 @@ module SpotFlow
       to_step = sequence_flow.target
       tokens_out.push sequence_flow.id
       tokens_out.uniq!
-      context.notify_listener({ event: :taken, execution: self, sequence_flow: sequence_flow })
+      context.notify_listener(:flow_taken, execution: self, sequence_flow: sequence_flow)
       parent.execute_step(to_step, sequence_flow: sequence_flow)
     end
 
@@ -159,7 +159,7 @@ module SpotFlow
           break
         end
       end
-      context.notify_listener({ event: :thrown, execution: self, message_name: message_name })
+      context.notify_listener(:message_thrown, execution: self, message_name: message_name)
     end
 
     def throw_error(error_name, variables: {})
@@ -170,7 +170,7 @@ module SpotFlow
           break
         end
       end
-      context.notify_listener({ event: :thrown, execution: self, error_name: error_name })
+      context.notify_listener(:error_thrown, execution: self, error_name: error_name)
     end
 
     def check_expired_timers
@@ -182,7 +182,7 @@ module SpotFlow
     end
 
     def evaluate_expression(expression, variables: parent.variables)
-      SpotFeel.eval(expression.delete_prefix("="), context: variables)
+      SpotFeel.eval(expression.delete_prefix("="), variables:, functions: context.functions)
     end
 
     def run_automated_tasks
@@ -191,13 +191,20 @@ module SpotFlow
 
     def run
       return unless waiting? && step.is_automated?
-      case step.type
-      when "bpmn:ServiceTask"
-        ServiceTaskRunner.call(self, context)
-      when "bpmn:ScriptTask"
-        ScriptTaskRunner.call(self, context)
-      when "bpmn:BusinessRuleTask"
-        BusinessRuleTaskRunner.call(self, context)
+
+      if step.task_type.present?
+        job_worker = context.job_workers[step.task_type.to_sym]
+        return unless job_worker.present?
+        result = job_worker.call(self, parent.variables)
+        signal(result)
+      else
+        if step.type == "bpmn:ScriptTask" && step.script.present?
+          result = evaluate_expression(step.script, variables: parent.variables)
+          signal(result)
+        elsif step.type == "bpmn:BusinessRuleTask" && step.decision_id.present?
+          result = SpotFeel.decide(step.decision_id, decisions: context.decisions, variables: parent.variables, functions: context.functions)
+          signal(result)
+        end
       end
     end
 

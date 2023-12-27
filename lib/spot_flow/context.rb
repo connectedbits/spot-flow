@@ -43,8 +43,8 @@ module SpotFlow
       end
     end
 
-    def notify_listener(event)
-      #listeners[event[:event]].call event
+    def notify_listener(*args)
+      listeners[args.first]&.call(args)
     end
 
     def default_process

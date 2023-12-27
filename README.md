@@ -23,7 +23,7 @@ The 'HelloWorld' process begins at the 'Start' event and waits when it reaches t
 execution.print
 ```
 
-```
+```ruby
 HelloWorld started * Flow_0zlro9p
 
 0 StartEvent Start: completed * out: Flow_0zlro9p
