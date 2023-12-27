@@ -1,10 +1,10 @@
 # Spot Flow
 
-Spot Flow is a workflow engine for Rails applications based on the [bpmn](https://www.bpmn.org) standard. It executes business processes defined in a [modeler](https://camunda.com/download/modeler/).
-
-Spot Flow uses [Spot Feel](https://github.com/connectedbits/spot-feel) to evaluate expressions and business rules in the BPMN model.
+Spot Flow is a workflow engine for Rails applications based on the [bpmn](https://www.bpmn.org) standard. It executes business processes defined in a [modeler](https://camunda.com/download/modeler/). It uses [Spot Feel](https://github.com/connectedbits/spot-feel) to evaluate expressions and business rules in the BPMN model. It can be used with [Spot Form](https://github.com/connectedbits/spot-form) to render dynamic forms for user tasks.
 
 ## Usage
+
+### Simple Example - Hello World
 
 The engine executes business processes like [this one](/test/fixtures/files/hello_world.bpmn).
 
@@ -62,11 +62,54 @@ HelloWorld completed *
 2 EndEvent End: completed * in: Flow_1doumjv
 ```
 
-### Kitchen Sink
+### Complex Example - Kitchen Sink
 
 The previous example is a simple process with a single task, but BPMN can express more [complex workflows](/test/fixtures/files/kitchen_sink.bpmn).
 
 ![Example](test/fixtures/files/kitchen_sink.png)
+
+The context provides information the engine will require to execute the process. Since the 'KitchenSink' process has a user, service, script, and business rule tasks it requires a bit more setup.
+
+```ruby
+# Setup the context
+context = SpotFlow.new(
+  processes: SpotFlow.processes_from_xml(File.read("kitchen_sink.bpmn")),
+  decisions: SpotFlow.decisions_from_xml(File.read("greeting.dmn")),
+  job_workers: {
+    "generate_fortune": -> (execution) {
+      [
+        "The fortune you seek is in another cookie.",
+        "A closed mouth gathers no feet.",
+        "A conclusion is simply the place where you got tired of thinking.",
+        ...
+        "If a turtle doesn’t have a shell, is it naked or homeless?",
+        "Change is inevitable, except for vending machines.",
+        "Don’t eat the paper.",
+      ].sample
+    },
+  }
+)
+```
+
+To better understand how the engine works, we'll explore two different paths.
+
+#### Scenario 1 - Happy Path
+
+The "Happy Path" is the most common path through a process. It's the path that executes when everything goes right. We start the process by calling start on the context we setup previously. Event though there are multiple start events the engine will default to a simple start event.
+
+```ruby
+context.start
+```
+
+#### Scenario 2 - Error Path
+
+In this scenario, we'll explore what happens when something goes wrong. We'll start the process with a message event.
+
+```ruby
+context.start(message: "error")
+```
+
+TODO: complete the kitchen sink example.
 
 ## Documentation
 
