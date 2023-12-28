@@ -27,7 +27,6 @@ require "spot_flow/bpmn/text_annotation"
 
 require "spot_flow/context"
 require "spot_flow/execution"
-require "spot_flow/task_runner"
 
 require "spot_flow/services/application_service"
 require "spot_flow/services/decision_reader"
