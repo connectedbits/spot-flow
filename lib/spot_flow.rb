@@ -7,8 +7,6 @@ require "active_support/time"
 require "active_support/core_ext/hash"
 require "active_support/core_ext/object/json"
 require "active_support/configurable"
-require "json_logic"
-require "awesome_print"
 
 require "spot_feel"
 
@@ -32,13 +30,8 @@ require "spot_flow/execution"
 require "spot_flow/task_runner"
 
 require "spot_flow/services/application_service"
-require "spot_flow/services/decision_evaluator"
 require "spot_flow/services/decision_reader"
-require "spot_flow/services/expression_evaluator"
-require "spot_flow/services/feel_evaluator"
-require "spot_flow/services/json_logic_evaluator"
 require "spot_flow/services/process_reader"
-require "spot_flow/services/script_runner"
 
 module SpotFlow
   include ActiveSupport::Configurable

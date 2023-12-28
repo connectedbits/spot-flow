@@ -18,8 +18,6 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = ">= 3.1"
 
   spec.add_dependency "activesupport", ">= 7.0.2.3"
-  spec.add_dependency "json_logic", "~> 0.4.7"
-  spec.add_dependency "awesome_print", "~> 1.9"
 
   spec.add_development_dependency "rake"
   spec.add_development_dependency "guard"
