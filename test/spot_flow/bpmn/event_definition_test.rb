@@ -5,8 +5,8 @@ require "test_helper"
 module SpotFlow
   module Bpmn
     describe ErrorEventDefinition do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("error_event_definition_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("error_event_definition_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definitions do
         let(:process) { context.process_by_id("ErrorEventDefinitionTest") }
@@ -49,8 +49,8 @@ module SpotFlow
     end
 
     describe MessageEventDefinition do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("message_event_definition_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("message_event_definition_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definitions do
         let(:process) { context.process_by_id("MessageEventDefinitionTest") }
@@ -136,8 +136,8 @@ module SpotFlow
     end
 
     describe TerminateEventDefinition do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("terminate_event_definition_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("terminate_event_definition_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definitions do
         let(:process) { context.process_by_id("TerminateEventDefinitionTest") }
@@ -189,9 +189,8 @@ module SpotFlow
     end
 
     describe TimerEventDefinition do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("timer_event_definition_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
-
+      let(:sources) { fixture_source("timer_event_definition_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definitions do
         let(:process) { context.process_by_id("TimerEventDefinitionTest") }

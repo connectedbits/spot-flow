@@ -5,8 +5,8 @@ require "test_helper"
 module SpotFlow
 
   describe "IO Mapping" do
-    let(:processes) { SpotFlow.processes_from_xml(fixture_source("io_mapping.bpmn")) }
-    let(:context) { SpotFlow.new(processes:) }
+    let(:sources) { fixture_source("io_mapping.bpmn") }
+    let(:context) { SpotFlow.new(sources) }
 
     describe :definition do
       let(:process) { context.process_by_id("IOMapping") }
@@ -24,7 +24,7 @@ module SpotFlow
     end
 
     describe :execution do
-      before { @execution = SpotFlow.new(processes:).start(variables: { order_id: "order-123", total_price: 25.0, customer: { name: "John", iban: "DE456" } }); }
+      before { @execution = context.start(variables: { order_id: "order-123", total_price: 25.0, customer: { name: "John", iban: "DE456" } }); }
 
       let(:execution) { @execution }
       let(:start_event) { execution.child_by_step_id("Start") }

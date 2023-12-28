@@ -13,8 +13,7 @@ The engine executes business processes like [this one](/test/fixtures/files/hell
 To start the process, initialize Spot Flow with the BPMN source, then call `start`.
 
 ```ruby
-processes = SpotFlow.processes_from_xml(File.read("hello_world.bpmn"))
-execution = SpotFlow.new(processes:).start
+execution = SpotFlow.new(File.read("hello_world.bpmn")).start
 ```
 
 The 'HelloWorld' process begins at the 'Start' event and waits when it reaches the 'SayHello' service task. It's often useful to print the process state to the console.
@@ -37,8 +36,7 @@ It's common to save the state the process until a task is complete. For example,
 execution_state = execution.serialize
 
 # Restores the process from the execution state.
-processes = SpotFlow.processes_from_xml(File.read("hello_world.bpmn"))
-execution = SpotFlow.new(processes:).restore(execution_state)
+execution = SpotFlow.restore(File.read("hello_world.bpmn"), execution_state:)
 ```
 
 After the task is completed, the waiting step is sent a `signal` with result.
@@ -71,24 +69,19 @@ The previous example is a simple process with a single task, but BPMN can expres
 The context provides information the engine will require to execute the process. Since the 'KitchenSink' process has a user, service, script, and business rule tasks it requires a bit more setup.
 
 ```ruby
-# Setup the context
-context = SpotFlow.new(
-  processes: SpotFlow.processes_from_xml(File.read("kitchen_sink.bpmn")),
-  decisions: SpotFlow.decisions_from_xml(File.read("greeting.dmn")),
-  job_workers: {
-    "generate_fortune": -> (execution) {
-      [
-        "The fortune you seek is in another cookie.",
-        "A closed mouth gathers no feet.",
-        "A conclusion is simply the place where you got tired of thinking.",
-        ...
-        "If a turtle doesn’t have a shell, is it naked or homeless?",
-        "Change is inevitable, except for vending machines.",
-        "Don’t eat the paper.",
-      ].sample
-    },
-  }
-)
+SpotFlow.config.services = {
+  "generate_fortune": -> (execution) {
+    [
+      "The fortune you seek is in another cookie.",
+      "A closed mouth gathers no feet.",
+      "A conclusion is simply the place where you got tired of thinking.",
+      ...
+      "If a turtle doesn’t have a shell, is it naked or homeless?",
+      "Change is inevitable, except for vending machines.",
+      "Don’t eat the paper.",
+    ].sample
+  },
+}
 ```
 
 To better understand how the engine works, we'll explore two different paths.
@@ -98,7 +91,7 @@ To better understand how the engine works, we'll explore two different paths.
 The "Happy Path" is the most common path through a process. It's the path that executes when everything goes right. We start the process by calling start on the context we setup previously. Event though there are multiple start events the engine will default to a simple start event.
 
 ```ruby
-context.start
+execution = SpotFlow.new([File.read("kitchen_sink.bpmn"), File.read("greeting.dmn")])
 ```
 
 #### Scenario 2 - Error Path
@@ -106,7 +99,7 @@ context.start
 In this scenario, we'll explore what happens when something goes wrong. We'll start the process with a message event.
 
 ```ruby
-context.start(message: "error")
+execution = SpotFlow.new([File.read("kitchen_sink.bpmn"), File.read("greeting.dmn")]).start_with_message(message: "error")
 ```
 
 TODO: complete the kitchen sink example.

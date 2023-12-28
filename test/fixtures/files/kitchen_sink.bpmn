@@ -52,7 +52,7 @@
     <bpmn:sequenceFlow id="Flow_09gfixi" sourceRef="GenerateFortune" targetRef="Join" />
     <bpmn:serviceTask id="GenerateFortune" name="Generate Fortune">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="generate_fortune" />
+        <zeebe:taskDefinition type="GenerateFortuneJob" />
         <zeebe:properties>
           <zeebe:property name="camundaModeler:exampleOutputJson" value="{ &#34;fortune&#34;: &#34;A cynic is only a frustrated optimist.&#34; }" />
         </zeebe:properties>

@@ -6,8 +6,8 @@ module SpotFlow
   module Bpmn
 
     describe Task do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("task_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("task_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definition do
         let(:process) { context.process_by_id("TaskTest") }
@@ -45,8 +45,8 @@ module SpotFlow
     end
 
     describe ServiceTask do
-      let(:processes) { SpotFlow.processes_from_xml( fixture_source("service_task_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("service_task_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definition do
         let(:process) { context.process_by_id("ServiceTaskTest") }
@@ -81,8 +81,8 @@ module SpotFlow
     end
 
     describe ScriptTask do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("script_task_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("script_task_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definition do
         let(:process) { context.process_by_id("ScriptTaskTest") }
@@ -118,9 +118,8 @@ module SpotFlow
     end
 
     describe BusinessRuleTask do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("business_rule_task_test.bpmn")) }
-      let(:decisions) { SpotFeel.decisions_from_xml(fixture_source("dish.dmn")) }
-      let(:context) { SpotFlow.new(processes:, decisions:) }
+      let(:sources) { [fixture_source("business_rule_task_test.bpmn"), fixture_source("dish.dmn")] }
+      let(:context) { Context.new(sources) }
 
       describe :definition do
         let(:process) { context.process_by_id("BusinessRuleTaskTest") }

@@ -5,8 +5,8 @@ require "test_helper"
 module SpotFlow
   module Bpmn
     describe Builder do
-      let(:source) { fixture_source("execution_test.bpmn") }
-      let(:moddle) { SpotFlow::Services::ProcessReader.call(source) }
+      let(:sources) { fixture_source("execution_test.bpmn") }
+      let(:moddle) { SpotFlow::Services::ProcessReader.call(sources) }
       let(:builder) { Builder.new(moddle) }
       let(:process) { builder.process_by_id("Process") }
 

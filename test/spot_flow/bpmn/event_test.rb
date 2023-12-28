@@ -5,8 +5,8 @@ require "test_helper"
 module SpotFlow
   module Bpmn
     describe StartEvent do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("start_event_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("start_event_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definitions do
         let(:process) { context.process_by_id("StartEventTest") }
@@ -31,8 +31,8 @@ module SpotFlow
     end
 
     describe IntermediateCatchEvent do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("intermediate_catch_event_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("intermediate_catch_event_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definitions do
         let(:process) { context.process_by_id("IntermediateCatchEventTest") }
@@ -62,8 +62,8 @@ module SpotFlow
     end
 
     describe IntermediateThrowEvent do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("intermediate_throw_event_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("intermediate_throw_event_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definitions do
         let(:process) { context.process_by_id("IntermediateThrowEventTest") }
@@ -84,8 +84,8 @@ module SpotFlow
     end
 
     describe BoundaryEvent do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("boundary_event_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("boundary_event_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definition do
         let(:process) { context.process_by_id("BoundaryEventTest") }
@@ -155,8 +155,8 @@ module SpotFlow
     end
 
     describe EndEvent do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("end_event_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("end_event_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definitions do
         let(:process) { context.process_by_id("EndEventTest") }

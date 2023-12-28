@@ -2,15 +2,20 @@
 
 module SpotFlow
   class Context
-    attr_reader :processes, :decisions, :job_workers, :functions, :listeners
-    attr_accessor :executions
+    attr_reader :sources, :processes, :decisions, :executions
 
-    def initialize(processes: [], decisions: [], job_workers: {}, functions: {}, listeners: {})
+    def initialize(sources = [])
+      @sources = Array.wrap(sources)
       @processes = Array.wrap(processes)
       @decisions = Array.wrap(decisions)
-      @job_workers = HashWithIndifferentAccess.new(job_workers)
-      @functions = HashWithIndifferentAccess.new(functions)
-      @listeners = HashWithIndifferentAccess.new(listeners)
+
+      @sources.each do |source|
+        if source.include?("http://www.omg.org/spec/DMN/20180521/DC/")
+          @decisions += SpotFlow.decisions_from_xml(source)
+        else
+          @processes += SpotFlow.processes_from_xml(source)
+        end
+      end
 
       @executions = []
     end
@@ -44,7 +49,7 @@ module SpotFlow
     end
 
     def notify_listener(*args)
-      listeners[args.first]&.call(args)
+      SpotFlow.config.listener&.call(args)
     end
 
     def default_process

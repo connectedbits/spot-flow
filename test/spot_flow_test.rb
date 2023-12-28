@@ -10,10 +10,9 @@ module SpotFlow
   end
 
   describe :hello_world do
-    before { @execution = context.start }
+    before { @execution = SpotFlow.new(sources).start }
 
-    let(:processes) { SpotFlow.processes_from_xml(fixture_source("hello_world.bpmn")) }
-    let(:context) { SpotFlow.new(processes:) }
+    let(:sources) { fixture_source("hello_world.bpmn") }
     let(:execution) { @execution }
     let(:waiting_step) { execution.waiting_tasks.first }  # TODO: should this be called waiting_steps?
 
@@ -33,7 +32,7 @@ module SpotFlow
       end
 
       describe :deserialization do
-        before { @execution = context.restore(execution_state) }
+        before { @execution = SpotFlow.restore(sources, execution_state:) }
 
         it "process should be restored to waiting state" do
           _(execution.completed?).must_equal false

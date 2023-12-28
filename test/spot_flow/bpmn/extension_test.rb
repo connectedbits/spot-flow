@@ -5,10 +5,10 @@ require "test_helper"
 module SpotFlow
   module Bpmn
     describe :extensions do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("extension_elements_test.bpmn")) }
+      let(:sources) { fixture_source("extension_elements_test.bpmn") }
+      let(:context) { SpotFlow::Context.new(sources) }
 
       describe :definition do
-        let(:context) { SpotFlow::Context.new(processes:) }
         let(:process) { context.process_by_id("ZeebeExtensionsTest") }
         let(:start_event) { process.element_by_id("Start") }
         let(:user_task) { process.element_by_id("UserTask") }

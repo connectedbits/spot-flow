@@ -6,8 +6,8 @@ module SpotFlow
   module Bpmn
 
     describe ExclusiveGateway do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("exclusive_gateway_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("exclusive_gateway_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definition do
         let(:process) { context.process_by_id("ExclusiveGatewayTest") }
@@ -57,8 +57,8 @@ module SpotFlow
     end
 
     describe ParallelGateway do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("parallel_gateway_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("parallel_gateway_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definition do
         let(:process) { context.process_by_id("ParallelGatewayTest") }
@@ -114,8 +114,8 @@ module SpotFlow
     end
 
     describe EventBasedGateway do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("event_based_gateway_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("event_based_gateway_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definition do
         let(:process) { context.process_by_id("EventBasedGatewayTest") }
@@ -165,8 +165,8 @@ module SpotFlow
     end
 
     describe InclusiveGateway do
-      let(:processes) { SpotFlow.processes_from_xml(fixture_source("inclusive_gateway_test.bpmn")) }
-      let(:context) { SpotFlow.new(processes:) }
+      let(:sources) { fixture_source("inclusive_gateway_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
 
       describe :definition do
         let(:process) { context.process_by_id("InclusiveGatewayTest") }

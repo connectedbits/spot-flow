@@ -53,6 +53,7 @@ module SpotFlow
 
       def execute(execution)
         execution.wait
+        #execution.run
       end
 
       def task_type

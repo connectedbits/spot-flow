@@ -182,7 +182,7 @@ module SpotFlow
     end
 
     def evaluate_expression(expression, variables: parent.variables)
-      SpotFeel.eval(expression.delete_prefix("="), variables:, functions: context.functions)
+      SpotFeel.eval(expression.delete_prefix("="), variables:)
     end
 
     def run_automated_tasks
@@ -192,20 +192,22 @@ module SpotFlow
     def run
       return unless waiting? && step.is_automated?
 
+      result = nil
+
       if step.task_type.present?
-        job_worker = context.job_workers[step.task_type.to_sym]
-        return unless job_worker.present?
-        result = job_worker.call(self, parent.variables)
-        signal(result)
+        service = SpotFeel.config.services&[step.task_type]
+        if service.present?
+          result = service.call(self, parent.variables)
+        end
       else
         if step.type == "bpmn:ScriptTask" && step.script.present?
           result = evaluate_expression(step.script, variables: parent.variables)
-          signal(result)
         elsif step.type == "bpmn:BusinessRuleTask" && step.decision_id.present?
-          result = SpotFeel.decide(step.decision_id, decisions: context.decisions, variables: parent.variables, functions: context.functions)
-          signal(result)
+          result = SpotFeel.decide(step.decision_id, decisions: context.decisions, variables: parent.variables)
         end
       end
+
+      signal(result) if result.present?
     end
 
     def call(process_id)

@@ -4,8 +4,8 @@ require "test_helper"
 
 module SpotFlow
   describe Execution do
-    let(:processes) { SpotFlow.processes_from_xml(fixture_source("execution_test.bpmn")) }
-    let(:context) { Context.new(processes:) }
+    let(:sources) { fixture_source("execution_test.bpmn") }
+    let(:context) { Context.new(sources) }
 
     describe :definition do
       let(:process) { context.process_by_id("Process") }
