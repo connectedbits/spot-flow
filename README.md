@@ -62,11 +62,27 @@ HelloWorld completed *
 
 ### Complex Example - Kitchen Sink
 
-The previous example is a simple process with a single task, but BPMN can express more [complex workflows](/test/fixtures/files/kitchen_sink.bpmn).
+The previous example is a simple process with a single task, but BPMN can express more complex workflows like [this one](/test/fixtures/files/kitchen_sink.bpmn).
 
 ![Example](test/fixtures/files/kitchen_sink.png)
 
-The context provides information the engine will require to execute the process. Since the 'KitchenSink' process has a user, service, script, and business rule tasks it requires a bit more setup.
+The example has many elements:
+
+- StartEvent Start: The default start event.
+- StartEvent IntroReceived: When a message corresponding to this event is received, the process will start here.
+- UserTask IntroduceYourself: A user task that will wait for a person to complete a form.
+- IntermediateCatchEvent TimesUp: When the process reaches the user task, the timer will begin. If a user doesn't complete the task in time, the process will continue here.
+- ParallelGateway Split: When the process arrives here, it will split into two paths.
+- BusinessRuleTask ChooseGreeting: A business rule task that evaluate a decision table to choose a greeting.
+- ExclusiveGateway WantsCookie: When the process arrives here, it will choose one of two paths based on whether the user wants a fortune cookie.
+- ServiceTask GenerateFortune: A service task that will call a service proc to generate a fortune. Note this will only be called if the expression associated with the path from the exclusive gateway evaluates to true.
+- ParallelGateway Join: When the process arrives here, it will wait for both paths to complete.
+- ScriptTask AuthorMessage: A script task that will combine the greeting and fortune into a message.
+- ServiceTask SayHello: This service task doesn't have an associated service. Instead, it will wait for a signal with a result.
+- EndEvent End: The default end event.
+- EndEvent SendError: This end event will be used if an error occurs and will send an error message.
+
+The GenerateFortune service task is not expensive so we'll use a simple proc to generate a random fortune.
 
 ```ruby
 SpotFlow.config.services = {
@@ -88,18 +104,23 @@ To better understand how the engine works, we'll explore two different paths.
 
 #### Scenario 1 - Happy Path
 
-The "Happy Path" is the most common path through a process. It's the path that executes when everything goes right. We start the process by calling start on the context we setup previously. Event though there are multiple start events the engine will default to a simple start event.
+The "Happy Path" is the most common path through a process. It's the path that executes when everything goes right. We must load all sources needed by the workflow. In this case we need both BPMN and DMN sources. When the start method is called, the process will begin at the default start event.
+
+In this example we'll require more than one source. One is a BPMN file that defines the process. The other is a DMN file that defines a decision table used in the business rule task.
 
 ```ruby
-execution = SpotFlow.new([File.read("kitchen_sink.bpmn"), File.read("greeting.dmn")])
+sources = [File.read("kitchen_sink.bpmn"), File.read("greeting.dmn")]
+execution = SpotFlow.new(sources).start
 ```
+
+The process will begin at the default start event.
 
 #### Scenario 2 - Error Path
 
 In this scenario, we'll explore what happens when something goes wrong. We'll start the process with a message event.
 
 ```ruby
-execution = SpotFlow.new([File.read("kitchen_sink.bpmn"), File.read("greeting.dmn")]).start_with_message(message: "error")
+execution = SpotFlow.new(sources).start_with_message("IntroductionReceived", { name: "Bob", language: "en", formal: true, cookie: false, error: true })
 ```
 
 TODO: complete the kitchen sink example.
