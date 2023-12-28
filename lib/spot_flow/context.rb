@@ -2,12 +2,13 @@
 
 module SpotFlow
   class Context
-    attr_reader :sources, :processes, :decisions, :executions
+    attr_reader :sources, :processes, :decisions, :services, :executions
 
-    def initialize(sources = [])
+    def initialize(sources = [], processes:[], decisions:[], services: {})
       @sources = Array.wrap(sources)
       @processes = Array.wrap(processes)
       @decisions = Array.wrap(decisions)
+      @services = HashWithIndifferentAccess.new((SpotFlow.config.services || {}).merge(services))
 
       @sources.each do |source|
         if source.include?("http://www.omg.org/spec/DMN/20180521/DC/")

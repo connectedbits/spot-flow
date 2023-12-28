@@ -57,8 +57,10 @@ module SpotFlow
         end
       end
 
-      describe :execution do
-        before { @execution = context.start(variables: { name: "Eric" }) }
+      describe :manual_execution do
+        before do
+          @execution = context.start(variables: { name: "Eric" })
+        end
 
         let(:execution) { @execution }
         let(:service_step) { execution.child_by_step_id("ServiceTask") }
@@ -76,6 +78,22 @@ module SpotFlow
             _(execution.variables["service_task"]).must_equal "👋 Hello Eric!"
             _(service_step.variables["service_task"]).must_equal "👋 Hello Eric!"
           end
+        end
+      end
+
+      describe :automated_execution do
+        before do
+          context.services["do_it"] = ->(variables) { "👋 Hello #{variables[:name]}!" }
+          @execution = context.start(variables: { name: "Eric" })
+        end
+        let(:execution) { @execution }
+        let(:service_step) { execution.child_by_step_id("ServiceTask") }
+
+        it "should run the service task" do
+          _(execution.completed?).must_equal true
+          _(service_step.completed?).must_equal true
+          _(execution.variables["service_task"]).must_equal "👋 Hello Eric!"
+          _(service_step.variables["service_task"]).must_equal "👋 Hello Eric!"
         end
       end
     end
@@ -100,19 +118,11 @@ module SpotFlow
         let(:execution) { @execution }
         let(:script_task) { execution.child_by_step_id("ScriptTask") }
 
-        it "should wait at the script task" do
-          _(script_task.waiting?).must_equal true
-        end
-
-        describe :run do
-          before { execution.run_automated_tasks }
-
-          it "should run the script task" do
-            _(execution.completed?).must_equal true
-            _(script_task.completed?).must_equal true
-            _(execution.variables["greeting"]).must_equal "👋 Hello Eric from ScriptTask!"
-            _(script_task.variables["greeting"]).must_equal "👋 Hello Eric from ScriptTask!"
-          end
+        it "should run the script task" do
+          _(execution.completed?).must_equal true
+          _(script_task.completed?).must_equal true
+          _(execution.variables["greeting"]).must_equal "👋 Hello Eric from ScriptTask!"
+          _(script_task.variables["greeting"]).must_equal "👋 Hello Eric from ScriptTask!"
         end
       end
     end
@@ -137,18 +147,10 @@ module SpotFlow
         let(:execution) { @execution }
         let(:business_rule_task) { execution.child_by_step_id("BusinessRuleTask") }
 
-        it "should wait at the business rule task" do
-          _(business_rule_task.waiting?).must_equal true
-        end
-
-        describe :run do
-          before { execution.run_automated_tasks }
-
-          it "should run the business rule task" do
-            _(execution.completed?).must_equal true
-            _(business_rule_task.completed?).must_equal true
-            _(business_rule_task.variables["result"]["dish"]).must_equal "Steak"
-          end
+        it "should run the business rule task" do
+          _(execution.completed?).must_equal true
+          _(business_rule_task.completed?).must_equal true
+          _(business_rule_task.variables["result"]["dish"]).must_equal "Steak"
         end
       end
     end

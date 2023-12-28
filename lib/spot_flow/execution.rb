@@ -21,7 +21,7 @@ module SpotFlow
             start_event.message_event_definitions.map do |message_event_definition|
               if message_name == message_event_definition.message_name
                 Execution.start(context:, process:, variables:, start_event_id: start_event.id).tap do |execution|
-                  executions.push execution 
+                  executions.push execution
                 end
               end
             end
@@ -108,13 +108,13 @@ module SpotFlow
       continue
     end
 
+    def continue
+      step.execute(self)
+    end
+
     def wait
       @status = "waiting"
       context.notify_listener(:execution_waited, execution: self)
-    end
-
-    def continue
-      step.execute(self)
     end
 
     def terminate
@@ -190,15 +190,12 @@ module SpotFlow
     end
 
     def run
-      return unless waiting? && step.is_automated?
-
-      result = nil
+      #return unless waiting? && step.is_automated?
+      return unless step.is_automated?
 
       if step.task_type.present?
-        service = SpotFeel.config.services&[step.task_type]
-        if service.present?
-          result = service.call(self, parent.variables)
-        end
+        service = context.services[step.task_type]
+        result = service.call(parent.variables) if service.present?
       else
         if step.type == "bpmn:ScriptTask" && step.script.present?
           result = evaluate_expression(step.script, variables: parent.variables)
@@ -207,7 +204,11 @@ module SpotFlow
         end
       end
 
-      signal(result) if result.present?
+      if result.present?
+        signal(result)
+      else
+        wait
+      end
     end
 
     def call(process_id)
