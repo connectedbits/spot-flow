@@ -62,6 +62,7 @@ module SpotFlow
   # Extract decisions from a DMN XML file.
   #
   def self.decisions_from_xml(xml)
-    SpotFeel.decisions_from_xml(xml)
+    definitions = SpotFeel.definitions_from_xml(xml)
+    definitions.decisions
   end
 end

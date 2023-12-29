@@ -3,16 +3,21 @@
 module SpotFlow
   class Context
     attr_reader :sources, :processes, :decisions, :services, :executions
+    attr_reader :bpmn_definitions, :dmn_definitions
 
     def initialize(sources = [], processes:[], decisions:[], services: {})
       @sources = Array.wrap(sources)
       @processes = Array.wrap(processes)
+      @bpmn_definitions = []
+      @dmn_definitions = []
       @decisions = Array.wrap(decisions)
       @services = HashWithIndifferentAccess.new((SpotFlow.config.services || {}).merge(services))
 
       @sources.each do |source|
         if source.include?("http://www.omg.org/spec/DMN/20180521/DC/")
-          @decisions += SpotFlow.decisions_from_xml(source)
+          definitions = SpotFeel.definitions_from_xml(source)
+          @dmn_definitions << definitions
+          @decisions += definitions.decisions
         else
           @processes += SpotFlow.processes_from_xml(source)
         end
@@ -86,6 +91,10 @@ module SpotFlow
 
     def decision_by_id(id)
       decisions.find { |d| d.id == id }
+    end
+
+    def dmn_definitions_by_decision_id(decision_id)
+      dmn_definitions.find { |definitions| definitions.decisions.find { |decision| decision.id == decision_id } }
     end
   end
 end

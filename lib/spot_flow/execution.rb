@@ -182,7 +182,7 @@ module SpotFlow
     end
 
     def evaluate_expression(expression, variables: parent.variables)
-      SpotFeel.eval(expression.delete_prefix("="), variables:)
+      SpotFeel.evaluate(expression.delete_prefix("="), variables:)
     end
 
     def run_automated_tasks
@@ -200,7 +200,7 @@ module SpotFlow
         if step.type == "bpmn:ScriptTask" && step.script.present?
           result = evaluate_expression(step.script, variables: parent.variables)
         elsif step.type == "bpmn:BusinessRuleTask" && step.decision_id.present?
-          result = SpotFeel.decide(step.decision_id, decisions: context.decisions, variables: parent.variables)
+          result = SpotFeel.decide(step.decision_id, definitions: context.dmn_definitions_by_decision_id(step.decision_id), variables: parent.variables)
         end
       end
 
