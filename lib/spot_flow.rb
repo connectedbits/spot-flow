@@ -7,6 +7,7 @@ require "active_support/time"
 require "active_support/core_ext/hash"
 require "active_support/core_ext/object/json"
 require "active_support/configurable"
+require "active_model"
 
 require "spot_feel"
 
@@ -31,6 +32,8 @@ require "spot_flow/execution"
 require "spot_flow/services/application_service"
 require "spot_flow/services/decision_reader"
 require "spot_flow/services/process_reader"
+
+require "spot_flow/bpmn2"
 
 module SpotFlow
   include ActiveSupport::Configurable
