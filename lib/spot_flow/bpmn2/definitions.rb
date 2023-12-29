@@ -4,7 +4,6 @@ module SpotFlow
   module Bpmn2
     class Definitions
       include ActiveModel::Model
-      include ActiveModel::Serialization
 
       attr_accessor :id, :name, :target_namespace, :exporter, :exporter_version, :execution_platform, :execution_platform_version, :processes
 
@@ -24,17 +23,8 @@ module SpotFlow
         end
       end
 
-      def attributes
-        {
-          "id": nil,
-          "name": nil,
-          "target_namespace": nil,
-          "exporter": nil,
-          "exporter_version": nil,
-          "execution_platform": nil,
-          "execution_platform_version": nil,
-          "processes": [],
-        }
+      def process_by_id(id)
+        processes.find { |process| process.id == id }
       end
 
       #
@@ -59,6 +49,8 @@ module SpotFlow
           process.inclusive_gateways = Array.wrap(moddle[:inclusive_gateway]).map { |gateway_moddle| gateway_from_moddle(gateway_moddle, InclusiveGateway) }
           process.event_based_gateways = Array.wrap(moddle[:event_based_gateway]).map { |gateway_moddle| gateway_from_moddle(gateway_moddle, EventBasedGateway) }
           process.sequence_flows = Array.wrap(moddle[:sequence_flow]).map { |flow_moddle| flow_from_moddle(flow_moddle, SequenceFlow) }
+
+          connect_references(process)
         end
       end
 
@@ -96,12 +88,20 @@ module SpotFlow
         instance.incoming = Array.wrap(moddle[:incoming]) if moddle[:incoming]
         instance.outgoing = Array.wrap(moddle[:outgoing]) if moddle[:outgoing]
         instance.extension_elements = extensions_elements_from_moddle(moddle[:extension_elements]) if moddle[:extension_elements]
+        instance.default = moddle[:default] if moddle[:default]
       end
 
       def self.flow_from_moddle(moddle, type)
         type.new(moddle.slice(:id, :source_ref, :target_ref)).tap do |flow|
           flow.condition_expression = moddle[:condition_expression] if moddle[:condition_expression]
         end
+      end
+
+      def self.connect_references(process)
+        # process.process_ref
+        # event_definition.error_ref, message_ref, signal_ref, escalation_ref
+        # event.attached_to_ref
+        # flow.source_ref, target_ref
       end
     end
   end

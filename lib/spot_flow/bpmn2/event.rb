@@ -4,18 +4,6 @@ module SpotFlow
   module Bpmn2
     class Event < Step
       attr_accessor :conditional_event_definition, :escalation_event_definition, :error_event_definition, :message_event_definition, :signal_event_definition, :terminate_event_definition, :timer_event_definition
-
-      def attributes
-        super.attributes.merge({
-          "conditional_event_definition": nil,
-          "escalation_event_definition": nil,
-          "error_event_definition": nil,
-          "message_event_definition": nil,
-          "signal_event_definition": nil,
-          "terminate_event_definition": nil,
-          "timer_event_definition": nil,
-        })
-      end
     end
 
     class StartEvent < Event
@@ -28,6 +16,7 @@ module SpotFlow
     end
 
     class BoundaryEvent < Event
+      attr_accessor :attached_to_ref, :attached_to, :cancel_activity
     end
 
     class EndEvent < Event

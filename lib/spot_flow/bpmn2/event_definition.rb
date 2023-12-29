@@ -2,54 +2,36 @@
 
 module SpotFlow
   module Bpmn2
-    class EventDefinition
-      include ActiveModel::Model
-      include ActiveModel::Serialization
-
-      attr_accessor :id
-
-      def attributes
-        {
-          "id": nil,
-        }
+    class EventDefinition < Element
+      def execute(execution)
       end
     end
 
     class ConditionalEventDefinition < EventDefinition
+      attr_accessor :variable_name, :variable_events, :condition
     end
 
     class EscalationEventDefinition < EventDefinition
     end
 
     class ErrorEventDefinition < EventDefinition
+      attr_accessor :error_ref, :error
+      attr_accessor :error_code_variable, :error_message_variable
     end
 
     class MessageEventDefinition < EventDefinition
       attr_accessor :message_ref, :message
-
-      def attributes
-        {
-          "id": nil,
-          "message_ref": nil,
-        }
-      end
     end
 
     class SignalEventDefinition < EventDefinition
+      attr_accessor :signal_ref, :signal
+    end
+
+    class TerminateEventDefinition < EventDefinition
     end
 
     class TimerEventDefinition < EventDefinition
       attr_accessor :time_date, :time_duration_type, :time_duration, :time_cycle
-
-      def attributes
-        {
-          "id": nil,
-          "time_date": nil,
-          "time_duration_type": nil,
-          "time_duration": nil,
-          "time_cycle": nil,
-        }
-      end
     end
   end
 end

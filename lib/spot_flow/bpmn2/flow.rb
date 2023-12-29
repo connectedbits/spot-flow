@@ -2,19 +2,11 @@
 
 module SpotFlow
   module Bpmn2
-    class Flow
+    class Flow < Element
       include ActiveModel::Model
-      include ActiveModel::Serialization
 
-      attr_accessor :id, :source_ref, :target_ref
-
-      def attributes
-        {
-          "id": nil,
-          "source_ref": nil,
-          "target_ref": nil,
-        }
-      end
+      attr_accessor :source_ref, :target_ref
+      attr_accessor :source, :target
     end
 
     class SequenceFlow < Flow
@@ -27,6 +19,14 @@ module SpotFlow
           },
         )
       end
+
+      def evaluate(execution)
+        return true unless condition&.body
+        execution.evaluate_condition(condition_expression)
+      end
+    end
+
+    class TextAnnotation < Flow
     end
   end
 end

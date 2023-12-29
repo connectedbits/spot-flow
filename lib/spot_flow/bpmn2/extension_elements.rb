@@ -7,10 +7,6 @@ module SpotFlow
       include ActiveModel::Serialization
 
       attr_accessor :assignment_definition, :called_decision, :form_definition, :io_mapping, :properties, :script, :subscription, :task_definition, :task_schedule
-
-      def self.from_moddle(_moddle)
-        ExtensionElements.new
-      end
     end
   end
 end

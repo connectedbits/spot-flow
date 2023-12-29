@@ -3,8 +3,6 @@
 module SpotFlow
   module Bpmn2
     class Gateway < Step
-      include ActiveModel::Model
-      include ActiveModel::Serialization
     end
 
     class ExclusiveGateway < Gateway

@@ -37,13 +37,13 @@
       <bpmn:incoming>Flow_1rcca7d</bpmn:incoming>
     </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0i87dy3" sourceRef="SendMessage" targetRef="End" />
-    <bpmn:exclusiveGateway id="Gateway_0lp786q" name="Tell Fortune?">
+    <bpmn:exclusiveGateway id="WantsCookie" name="Tell Fortune?">
       <bpmn:incoming>Flow_0fm9oq9</bpmn:incoming>
       <bpmn:outgoing>Flow_1d1hs5n</bpmn:outgoing>
       <bpmn:outgoing>Flow_0ehgwup</bpmn:outgoing>
     </bpmn:exclusiveGateway>
-    <bpmn:sequenceFlow id="Flow_0fm9oq9" sourceRef="Split" targetRef="Gateway_0lp786q" />
-    <bpmn:sequenceFlow id="Flow_1d1hs5n" name="yes" sourceRef="Gateway_0lp786q" targetRef="GenerateFortune">
+    <bpmn:sequenceFlow id="Flow_0fm9oq9" sourceRef="Split" targetRef="WantsCookie" />
+    <bpmn:sequenceFlow id="Flow_1d1hs5n" name="yes" sourceRef="WantsCookie" targetRef="GenerateFortune">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=cookie = true</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0ixux5h" sourceRef="GenerateFortune" targetRef="Join" />
@@ -100,7 +100,7 @@
       <bpmn:incoming>Flow_0olay0o</bpmn:incoming>
       <bpmn:outgoing>Flow_0i87dy3</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:sequenceFlow id="Flow_0ehgwup" name="no" sourceRef="Gateway_0lp786q" targetRef="Join">
+    <bpmn:sequenceFlow id="Flow_0ehgwup" name="no" sourceRef="WantsCookie" targetRef="Join">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=cookie = false</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1rcca7d" sourceRef="TimesUp" targetRef="End" />
@@ -129,7 +129,7 @@
           <dc:Bounds x="164" y="385" width="71" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_0lp786q_di" bpmnElement="Gateway_0lp786q" isMarkerVisible="true">
+      <bpmndi:BPMNShape id="Gateway_0lp786q_di" bpmnElement="WantsCookie" isMarkerVisible="true">
         <dc:Bounds x="535" y="222" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="532" y="192" width="64" height="14" />

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "bpmn2/element"
 require_relative "bpmn2/extension_elements"
 require_relative "bpmn2/step"
 require_relative "bpmn2/flow"
