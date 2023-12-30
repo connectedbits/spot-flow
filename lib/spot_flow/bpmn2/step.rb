@@ -5,6 +5,12 @@ module SpotFlow
     class Step < Element
       attr_accessor :incoming, :outgoing, :default
 
+      def initialize(attributes={})
+        super
+        @incoming = []
+        @outgoing = []
+      end
+
       def diverging?
         outgoing.length > 1
       end

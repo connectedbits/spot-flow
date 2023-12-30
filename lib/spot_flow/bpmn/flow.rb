@@ -15,6 +15,9 @@ module SpotFlow
       end
     end
 
+    class Association < Flow
+    end
+
     class SequenceFlow < Flow
       attr_accessor :condition
 
@@ -27,6 +30,9 @@ module SpotFlow
         return true unless condition&.body
         execution.evaluate_condition(condition)
       end
+    end
+
+    class TextAnnotation < Flow
     end
   end
 end

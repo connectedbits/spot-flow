@@ -11,8 +11,6 @@ module SpotFlow
       attr_accessor :tasks, :business_rule_tasks, :script_tasks, :service_tasks, :user_tasks
       attr_accessor :sequence_flows
 
-      attr_accessor :parent
-
       def events
         @events ||= start_events + end_events + boundary_events + intermediate_catch_events + intermediate_throw_events
       end
@@ -23,6 +21,10 @@ module SpotFlow
 
       def activities
         @activities ||= tasks + business_rule_tasks + script_tasks + service_tasks + user_tasks
+      end
+
+      def steps
+        @steps ||= activities + events + gateways
       end
 
       def flows
