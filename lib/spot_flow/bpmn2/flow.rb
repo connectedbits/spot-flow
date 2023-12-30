@@ -3,26 +3,34 @@
 module SpotFlow
   module Bpmn2
     class Flow < Element
-      include ActiveModel::Model
-
       attr_accessor :source_ref, :target_ref
       attr_accessor :source, :target
+
+      def initialize(attributes = {})
+        super(attributes.except(:source_ref, :target_ref))
+
+        @source_ref = attributes[:source_ref]
+        @target_ref = attributes[:target_ref]
+        @source = nil
+        @target = nil
+      end
+    end
+
+    class Association < Flow
     end
 
     class SequenceFlow < Flow
-      attr_accessor :condition_expression
+      attr_accessor :condition
 
-      def attributes
-        super.attributes.merge(
-          {
-            "condition_expression": nil,
-          },
-        )
+      def initialize(attributes = {})
+        super(attributes.except(:condition))
+
+        @condition = attributes[:condition_expression]
       end
 
       def evaluate(execution)
         return true unless condition&.body
-        execution.evaluate_condition(condition_expression)
+        execution.evaluate_condition(condition)
       end
     end
 

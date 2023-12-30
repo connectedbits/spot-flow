@@ -3,6 +3,7 @@
 module SpotFlow
   module Bpmn2
     class Task < Activity
+
       def is_automated?
         false
       end
@@ -32,6 +33,13 @@ module SpotFlow
       end
     end
 
+    class UserTask < Task
+
+      def form_key
+        extension_elements&.form_definition&.form_key
+      end
+    end
+
     class ServiceTask < Task
       attr_accessor :service
 
@@ -52,17 +60,8 @@ module SpotFlow
       end
     end
 
-    class BusinessRuleTask < ServiceTask
-      def decision_id
-        extension_elements&.called_decision&.decision_id
-      end
-
-      def result_variable
-        extension_elements&.called_decision&.result_variable
-      end
-    end
-
     class ScriptTask < ServiceTask
+
       def script
         extension_elements&.script&.expression
       end
@@ -72,9 +71,14 @@ module SpotFlow
       end
     end
 
-    class UserTask < Task
-      def form_key
-        extension_elements&.form_definition&.form_key
+    class BusinessRuleTask < ServiceTask
+
+      def decision_id
+        extension_elements&.called_decision&.decision_id
+      end
+
+      def result_variable
+        extension_elements&.called_decision&.result_variable
       end
     end
   end

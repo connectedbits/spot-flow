@@ -5,10 +5,12 @@ module SpotFlow
     class Step < Element
       attr_accessor :incoming, :outgoing, :default
 
-      def initialize(attributes={})
-        super
+      def initialize(attributes = {})
+        super(attributes.except(:incoming, :outgoing, :default))
+
         @incoming = []
         @outgoing = []
+        @default = attributes[:default]
       end
 
       def diverging?
@@ -45,6 +47,12 @@ module SpotFlow
 
     class Activity < Step
       attr_accessor :attachments
+
+      def initialize(attributes = {})
+        super(attributes.except(:attachments))
+
+        @attachments = []
+      end
     end
   end
 end

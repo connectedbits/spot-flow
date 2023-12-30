@@ -6,6 +6,12 @@ module SpotFlow
       include ActiveModel::Model
 
       attr_accessor :id, :name, :extension_elements
+
+      def initialize(attributes = {})
+        super(attributes.slice(:id, :name))
+
+        @extension_elements = ExtensionElements.new(attributes[:extension_elements]) if attributes[:extension_elements].present?
+      end
     end
 
     class Message < Element
@@ -25,6 +31,10 @@ module SpotFlow
 
     class Participant < Element
       attr_accessor :process_ref, :process
+
+      def initialize(attributes = {})
+        super(attributes.except(:process_ref))
+      end
     end
   end
 end
