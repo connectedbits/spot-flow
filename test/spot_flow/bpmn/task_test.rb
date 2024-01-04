@@ -80,22 +80,6 @@ module SpotFlow
           end
         end
       end
-
-      describe :automated_execution do
-        before do
-          context.services["do_it"] = ->(variables) { "👋 Hello #{variables[:name]}!" }
-          @execution = context.start(variables: { name: "Eric" })
-        end
-        let(:execution) { @execution }
-        let(:service_step) { execution.child_by_step_id("ServiceTask") }
-
-        it "should run the service task" do
-          _(execution.completed?).must_equal true
-          _(service_step.completed?).must_equal true
-          _(execution.variables["service_task"]).must_equal "👋 Hello Eric!"
-          _(service_step.variables["service_task"]).must_equal "👋 Hello Eric!"
-        end
-      end
     end
 
     describe ScriptTask do

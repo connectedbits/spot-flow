@@ -190,18 +190,12 @@ module SpotFlow
     end
 
     def run
-      #return unless waiting? && step.is_automated?
       return unless step.is_automated?
 
-      if step.task_type.present?
-        service = context.services[step.task_type]
-        result = service.call(parent.variables) if service.present?
-      else
-        if step.class == Bpmn::ScriptTask && step.script.present?
-          result = evaluate_expression(step.script, variables: parent.variables)
-        elsif step.class == Bpmn::BusinessRuleTask && step.decision_id.present?
-          result = SpotFeel.decide(step.decision_id, definitions: context.dmn_definitions_by_decision_id(step.decision_id), variables: parent.variables)
-        end
+      if step.class == Bpmn::ScriptTask && step.script.present?
+        result = evaluate_expression(step.script, variables: parent.variables)
+      elsif step.class == Bpmn::BusinessRuleTask && step.decision_id.present?
+        result = SpotFeel.decide(step.decision_id, definitions: context.dmn_definitions_by_decision_id(step.decision_id), variables: parent.variables)
       end
 
       if result.present?
