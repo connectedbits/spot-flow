@@ -57,7 +57,7 @@ module SpotFlow
         end
       end
 
-      describe :manual_execution do
+      describe :execution do
         before do
           @execution = context.start(variables: { name: "Eric" })
         end

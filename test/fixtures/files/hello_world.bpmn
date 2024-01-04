@@ -1,53 +1,170 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1jpnpte" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.17.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.3.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_09vrjz0" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.17.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.3.0">
   <bpmn:process id="HelloWorld" name="Hello World" isExecutable="true">
     <bpmn:startEvent id="Start" name="Start">
-      <bpmn:extensionElements>
-        <zeebe:properties>
-          <zeebe:property name="camundaModeler:exampleOutputJson" value="{ &#34;name&#34;: &#34;Eric&#34; }" />
-        </zeebe:properties>
-      </bpmn:extensionElements>
-      <bpmn:outgoing>Flow_0zlro9p</bpmn:outgoing>
+      <bpmn:outgoing>Flow_080794y</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:sequenceFlow id="Flow_0zlro9p" sourceRef="Start" targetRef="SayHello" />
-    <bpmn:endEvent id="End" name="End">
-      <bpmn:incoming>Flow_1doumjv</bpmn:incoming>
-    </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1doumjv" sourceRef="SayHello" targetRef="End" />
-    <bpmn:task id="SayHello" name="Say Hello">
+    <bpmn:sequenceFlow id="Flow_080794y" sourceRef="Start" targetRef="IntroduceYourself" />
+    <bpmn:sequenceFlow id="Flow_0t9jhga" sourceRef="IntroduceYourself" targetRef="Split" />
+    <bpmn:sequenceFlow id="Flow_0gi9kt6" sourceRef="Split" targetRef="ChooseGreeting">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1652shv" sourceRef="ChooseGreeting" targetRef="Join" />
+    <bpmn:sequenceFlow id="Flow_0ws7a4m" sourceRef="Join" targetRef="GenerateMessage" />
+    <bpmn:sequenceFlow id="Flow_0gkfhvr" sourceRef="GenerateMessage" targetRef="End" />
+    <bpmn:sequenceFlow id="Flow_0941shg" sourceRef="Split" targetRef="ChooseFortune">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=cookie = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1iuc1xe" sourceRef="ChooseFortune" targetRef="Join" />
+    <bpmn:scriptTask id="GenerateMessage" name="Generate Message">
       <bpmn:extensionElements>
+        <zeebe:script expression="=if cookie then&#10;  &#34;👋 &#34; + greeting + &#34; &#34; + name + &#34; 🥠 &#34; + fortune&#10;else&#10;  &#34;👋 &#34; + greeting + &#34; &#34; + name" resultVariable="message" />
         <zeebe:properties>
-          <zeebe:property name="camundaModeler:exampleOutputJson" value="{ &#34;message&#34;: &#34;Hello Eric&#34; }" />
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;message&#34;: &#34;👋 Ciao Eric, 🥠 The fortune you seek is in another cookie.&#34;&#10;}" />
         </zeebe:properties>
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0zlro9p</bpmn:incoming>
-      <bpmn:outgoing>Flow_1doumjv</bpmn:outgoing>
-    </bpmn:task>
+      <bpmn:incoming>Flow_0ws7a4m</bpmn:incoming>
+      <bpmn:outgoing>Flow_0gkfhvr</bpmn:outgoing>
+    </bpmn:scriptTask>
+    <bpmn:businessRuleTask id="ChooseGreeting" name="Choose Greeting">
+      <bpmn:extensionElements>
+        <zeebe:calledDecision decisionId="ChooseGreeting" resultVariable="greeting" />
+        <zeebe:properties>
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;greeting&#34;: &#34;Caio&#34;&#10;}" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0gi9kt6</bpmn:incoming>
+      <bpmn:outgoing>Flow_1652shv</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:serviceTask id="ChooseFortune" name="Choose Fortune">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="GenerateFortuneJob" retries="3" />
+        <zeebe:properties>
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;fortune&#34;: &#34;The fortune you seek is in another cookie.&#34; &#10;}" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0941shg</bpmn:incoming>
+      <bpmn:outgoing>Flow_1iuc1xe</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="IntroduceYourself" name="Introduce Yourself">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="introduce_yourself" />
+        <zeebe:properties>
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{ &#10;  &#34;name&#34;: &#34;Eric&#34;, &#10;  &#34;language&#34;: &#34;it&#34;,&#10;  &#34;formal&#34;: true,&#10;  &#34;cookie&#34;: true &#10;}" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_080794y</bpmn:incoming>
+      <bpmn:outgoing>Flow_0t9jhga</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="EggTimer" name="After 2 hours - Times Up!" attachedToRef="IntroduceYourself">
+      <bpmn:outgoing>Flow_1agmyn8</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_1ido9gn">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT2H</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_1agmyn8" sourceRef="EggTimer" targetRef="End" />
+    <bpmn:endEvent id="End" name="End">
+      <bpmn:incoming>Flow_0gkfhvr</bpmn:incoming>
+      <bpmn:incoming>Flow_1agmyn8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:inclusiveGateway id="Split" name="Split">
+      <bpmn:incoming>Flow_0t9jhga</bpmn:incoming>
+      <bpmn:outgoing>Flow_0gi9kt6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0941shg</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:inclusiveGateway id="Join" name="Join">
+      <bpmn:incoming>Flow_1652shv</bpmn:incoming>
+      <bpmn:incoming>Flow_1iuc1xe</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ws7a4m</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="HelloWorld">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="Start">
-        <dc:Bounds x="179" y="99" width="36" height="36" />
+        <dc:Bounds x="179" y="159" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="186" y="142" width="24" height="14" />
+          <dc:Bounds x="185" y="202" width="24" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_0ylwusn_di" bpmnElement="End">
-        <dc:Bounds x="432" y="99" width="36" height="36" />
+      <bpmndi:BPMNShape id="Activity_0fyot22_di" bpmnElement="GenerateMessage">
+        <dc:Bounds x="790" y="137" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1spgr8r_di" bpmnElement="ChooseGreeting">
+        <dc:Bounds x="530" y="137" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1nkt8bu_di" bpmnElement="ChooseFortune">
+        <dc:Bounds x="530" y="250" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jwynt5_di" bpmnElement="IntroduceYourself">
+        <dc:Bounds x="270" y="137" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0tryxho_di" bpmnElement="End">
+        <dc:Bounds x="952" y="159" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="440" y="142" width="20" height="14" />
+          <dc:Bounds x="960" y="135" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1nroa49_di" bpmnElement="SayHello">
-        <dc:Bounds x="270" y="77" width="100" height="80" />
+      <bpmndi:BPMNShape id="Gateway_1lbrrn0_di" bpmnElement="Split">
+        <dc:Bounds x="425" y="152" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="439" y="122" width="22" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0zlro9p_di" bpmnElement="Flow_0zlro9p">
-        <di:waypoint x="215" y="117" />
-        <di:waypoint x="270" y="117" />
+      <bpmndi:BPMNShape id="Gateway_1hr23wy_di" bpmnElement="Join">
+        <dc:Bounds x="685" y="152" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="700" y="122" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1mct1pe_di" bpmnElement="EggTimer">
+        <dc:Bounds x="302" y="199" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="338" y="243" width="63" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_080794y_di" bpmnElement="Flow_080794y">
+        <di:waypoint x="215" y="177" />
+        <di:waypoint x="270" y="177" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1doumjv_di" bpmnElement="Flow_1doumjv">
-        <di:waypoint x="370" y="117" />
-        <di:waypoint x="432" y="117" />
+      <bpmndi:BPMNEdge id="Flow_0t9jhga_di" bpmnElement="Flow_0t9jhga">
+        <di:waypoint x="370" y="177" />
+        <di:waypoint x="425" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gi9kt6_di" bpmnElement="Flow_0gi9kt6">
+        <di:waypoint x="475" y="177" />
+        <di:waypoint x="530" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1652shv_di" bpmnElement="Flow_1652shv">
+        <di:waypoint x="630" y="177" />
+        <di:waypoint x="685" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ws7a4m_di" bpmnElement="Flow_0ws7a4m">
+        <di:waypoint x="735" y="177" />
+        <di:waypoint x="790" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gkfhvr_di" bpmnElement="Flow_0gkfhvr">
+        <di:waypoint x="890" y="177" />
+        <di:waypoint x="952" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0941shg_di" bpmnElement="Flow_0941shg">
+        <di:waypoint x="450" y="202" />
+        <di:waypoint x="450" y="290" />
+        <di:waypoint x="530" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1iuc1xe_di" bpmnElement="Flow_1iuc1xe">
+        <di:waypoint x="630" y="290" />
+        <di:waypoint x="710" y="290" />
+        <di:waypoint x="710" y="202" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1agmyn8_di" bpmnElement="Flow_1agmyn8">
+        <di:waypoint x="320" y="235" />
+        <di:waypoint x="320" y="370" />
+        <di:waypoint x="970" y="370" />
+        <di:waypoint x="970" y="195" />
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

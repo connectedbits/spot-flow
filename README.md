@@ -4,16 +4,14 @@ Spot Flow is a workflow engine for Rails applications based on the [bpmn](https:
 
 ## Usage
 
-### Simple Example - Hello World
-
 The engine executes business processes like [this one](/test/fixtures/files/hello_world.bpmn).
 
-<img src="test/fixtures/files/hello_world.png" alt="Hello World BPMN" style="width:400px;"/>
+![Example](test/fixtures/files/hello_world.png)
 
-To start the process, initialize Spot Flow with the BPMN source, then call `start`.
+To start the process, initialize Spot Flow with the BPMN and DMN source files, then call `start`.
 
 ```ruby
-execution = SpotFlow.new(File.read("hello_world.bpmn")).start
+execution = SpotFlow.new([File.read("hello_world.bpmn"), File.read("choose_greeting.dmn")]).start
 ```
 
 It's often useful to print the process state to the console.
@@ -60,52 +58,7 @@ HelloWorld completed *
 2 EndEvent End: completed * in: Flow_1doumjv
 ```
 
-### Complex Example - Kitchen Sink
-
-The previous example is a simple process with a single task, but BPMN can express more complex workflows like [this one](/test/fixtures/files/kitchen_sink.bpmn).
-
-![Example](test/fixtures/files/kitchen_sink.png)
-
-The example has many elements:
-
-- StartEvent Start: The default start event.
-- StartEvent IntroReceived: When a message corresponding to this event is received, the process will start here.
-- UserTask IntroduceYourself: A user task that will wait for a person to complete a form.
-- IntermediateCatchEvent TimesUp: When the process reaches the user task, the timer will begin. If a user doesn't complete the task in time, the process will continue here.
-- ParallelGateway Split: When the process arrives here, it will split into two paths.
-- BusinessRuleTask ChooseGreeting: A business rule task that evaluate a decision table to choose a greeting.
-- ExclusiveGateway WantsCookie: When the process arrives here, it will choose one of two paths based on whether the user wants a fortune cookie.
-- ServiceTask GenerateFortune: A service task that will call a service proc to generate a fortune. Note this will only be called if the expression associated with the path from the exclusive gateway evaluates to true.
-- ParallelGateway Join: When the process arrives here, it will wait for both paths to complete.
-- ScriptTask AuthorMessage: A script task that will combine the greeting and fortune into a message.
-- ServiceTask SayHello: This service task doesn't have an associated service. Instead, it will wait for a signal with a result.
-- EndEvent End: The default end event.
-- EndEvent SendError: This end event will be used if an error occurs and will send an error message.
-
-To better understand how the engine works, we'll explore two different paths.
-
-#### Scenario 1 - Happy Path
-
-The "Happy Path" is the most common path through a process. It's the path that executes when everything goes right. We must load all sources needed by the workflow. In this case we need both BPMN and DMN sources. When the start method is called, the process will begin at the default start event.
-
-In this example we'll require more than one source. One is a BPMN file that defines the process. The other is a DMN file that defines a decision table used in the business rule task.
-
-```ruby
-sources = [File.read("kitchen_sink.bpmn"), File.read("greeting.dmn")]
-execution = SpotFlow.new(sources).start
-```
-
-The process will begin at the default start event.
-
-#### Scenario 2 - Error Path
-
-In this scenario, we'll explore what happens when something goes wrong. We'll start the process with a message event.
-
-```ruby
-execution = SpotFlow.new(sources).start_with_message("IntroductionReceived", { name: "Bob", language: "en", formal: true, cookie: false, error: true })
-```
-
-TODO: complete the kitchen sink example.
+TODO: Expand usage to include expanded hello world example.
 
 ## Documentation
 

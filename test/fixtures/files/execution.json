@@ -1,14 +1,14 @@
 {
   "id": "e5fa36aa-1a9b-4dd0-aaf0-58b5c2ca8783",
   "step_id": "Process",
-  "step_type": "bpmn:Process",
+  "step_type": "Process",
   "status": "started",
   "started_at": "2023-12-26T20:28:34.251Z",
   "children": [
     {
       "id": "df67816e-42c0-4197-ab3f-8e4b698aeeb1",
       "step_id": "Start",
-      "step_type": "bpmn:StartEvent",
+      "step_type": "StartEvent",
       "status": "completed",
       "started_at": "2023-12-26T20:28:34.251Z",
       "ended_at": "2023-12-26T20:28:34.251Z",
@@ -17,7 +17,7 @@
     {
       "id": "a9118fc3-a5ef-4d62-a034-5abed0b729b1",
       "step_id": "Task",
-      "step_type": "bpmn:Task",
+      "step_type": "Task",
       "status": "waiting",
       "started_at": "2023-12-26T20:28:34.251Z",
       "tokens_in": ["Flow_0v82x0v"]
@@ -25,7 +25,7 @@
     {
       "id": "df6a6954-956a-4472-a894-43edfd1f76b3",
       "step_id": "Catch",
-      "step_type": "bpmn:BoundaryEvent",
+      "step_type": "BoundaryEvent",
       "attached_to_id": "a9118fc3-a5ef-4d62-a034-5abed0b729b1",
       "status": "waiting",
       "started_at": "2023-12-26T20:28:34.251Z",

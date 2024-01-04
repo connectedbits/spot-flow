@@ -24,18 +24,6 @@ module SpotFlow
             _(definitions.processes.count).must_equal(1)
           end
         end
-
-        describe :kitchen_sink do
-          let(:xml) { fixture_source("kitchen_sink.bpmn") }
-          let(:definitions) { Definitions.from_xml(xml) }
-
-          it "should initialize the definitions" do
-            _(definitions.messages.count).must_equal(1)
-            _(definitions.signals.count).must_equal(0)
-            _(definitions.errors.count).must_equal(0)
-            _(definitions.processes.count).must_equal(1)
-          end
-        end
       end
     end
   end
