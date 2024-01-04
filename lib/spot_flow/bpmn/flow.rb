@@ -6,10 +6,11 @@ module SpotFlow
       attr_accessor :source_ref, :target_ref
       attr_accessor :source, :target
 
-      def initialize(moddle)
-        super
-        @source_ref = moddle["sourceRef"]
-        @target_ref = moddle["targetRef"]
+      def initialize(attributes = {})
+        super(attributes.except(:source_ref, :target_ref))
+
+        @source_ref = attributes[:source_ref]
+        @target_ref = attributes[:target_ref]
         @source = nil
         @target = nil
       end
@@ -21,9 +22,10 @@ module SpotFlow
     class SequenceFlow < Flow
       attr_accessor :condition
 
-      def initialize(moddle)
-        super
-        @condition = Expression.new(moddle["conditionExpression"]) if moddle["conditionExpression"]
+      def initialize(attributes = {})
+        super(attributes.except(:condition))
+
+        @condition = attributes[:condition_expression]
       end
 
       def evaluate(execution)

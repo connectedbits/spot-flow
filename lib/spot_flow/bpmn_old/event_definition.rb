@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 module SpotFlow
-  module Bpmn2
+  module Bpmn
     class EventDefinition < Element
+
       def execute(execution)
       end
     end
@@ -10,12 +11,11 @@ module SpotFlow
     class ConditionalEventDefinition < EventDefinition
       attr_accessor :variable_name, :variable_events, :condition
 
-      def initialize(attributes = {})
-        super(attributes.except(:variable_name, :variable_events, :condition))
-
-        @variable_name = moddle[:variable_name] # "var1"
-        @variable_events = moddle[:variable_events] # "create, update"
-        @condition = moddle[:condition] # var1 = 1
+      def initialize(moddle)
+        super
+        @variable_name = moddle["variableName"] # "var1"
+        @variable_events = moddle["variableEvents"] # "create, update"
+        @condition = Bpmn::Expression.new(moddle["condition"]) if moddle["condition"] # ${var1 == 1}
       end
     end
 
@@ -26,12 +26,11 @@ module SpotFlow
       attr_accessor :error_ref, :error
       attr_accessor :error_code_variable, :error_message_variable
 
-      def initialize(attributes = {})
-        super(attributes.except(:error_ref, :error_code_variable, :error_message_variable))
-
-        @error_ref = attributes[:error_ref]
-        @error_code_variable = attributes[:error_code_variable]
-        @error_message_variable = attributes[:error_message_variable]
+      def initialize(moddle)
+        super
+        @error_ref = moddle["errorRef"]
+        @error_code_variable = moddle["errorCodeVariable"]
+        @error_message_variable = moddle["errorMessageVariable"]
       end
 
       def execute(execution)
@@ -54,10 +53,9 @@ module SpotFlow
     class MessageEventDefinition < EventDefinition
       attr_accessor :message_ref, :message
 
-      def initialize(attributes = {})
-        super(attributes.except(:message_ref))
-
-        @message_ref = attributes[:message_ref]
+      def initialize(moddle)
+        super
+        @message_ref = moddle["messageRef"]
       end
 
       def execute(execution)
@@ -80,10 +78,9 @@ module SpotFlow
     class SignalEventDefinition < EventDefinition
       attr_accessor :signal_ref, :signal
 
-      def initialize(attributes = {})
-        super(attributes.except(:signal_ref))
-
-        @signal_ref = moddle[:signal_ref]
+      def initialize(moddle)
+        super
+        @signal_ref = moddle["signalRef"]
       end
 
       def signal_id
@@ -105,11 +102,12 @@ module SpotFlow
     class TimerEventDefinition < EventDefinition
       attr_accessor :time_date, :time_duration_type, :time_duration, :time_cycle
 
-      def initialize(attributes = {})
-        super(attributes.except(:time_date, :time_duration, :time_cycle))
-
-        @time_duration_type = moddle[:time_duration_type]
-        @time_duration = moddle[:time_duration]
+      def initialize(moddle)
+        super
+        if moddle["timeDuration"]
+          @time_duration_type = moddle["timeDuration"]["$type"]
+          @time_duration = moddle["timeDuration"]["body"]
+        end
       end
 
       def execute(execution)

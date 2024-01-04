@@ -1,38 +1,31 @@
 # frozen_string_literal: true
 
 module SpotFlow
+  module Bpmn
+    class Extension
+      include ActiveModel::Model
+    end
+  end
+
   module Zeebe
-    class AssignmentDefinition
+    class AssignmentDefinition < Bpmn::Extension
       attr_accessor :assignee, :candidate_groups, :candidate_users
-
-      def initialize(moddle)
-        @assignee = moddle["assignee"]
-        @candidate_groups = moddle["candidateGroups"]
-        @candidate_users = moddle["candidateUsers"]
-      end
     end
 
-    class CalledDecision
+    class CalledDecision < Bpmn::Extension
       attr_accessor :decision_id, :result_variable
-
-      def initialize(moddle)
-        @decision_id = moddle["decisionId"]
-        @result_variable = moddle["resultVariable"]
-      end
     end
 
-    class FormDefinition
+    class FormDefinition < Bpmn::Extension
       attr_accessor :form_key
-
-      def initialize(moddle)
-        @form_key = moddle["formKey"]
-      end
     end
 
-    class IoMapping
-      def initialize(moddle)
-        @inputs = moddle["inputParameters"] || []
-        @outputs = moddle["outputParameters"] || []
+    class IoMapping < Bpmn::Extension
+      def initialize(attributes = {})
+        super
+
+        @inputs = attributes[:input_parameters] || []
+        @outputs = attributes[:output_parameters] || []
       end
 
       def inputs
@@ -44,48 +37,24 @@ module SpotFlow
       end
     end
 
-    class Parameter
+    class Parameter < Bpmn::Extension
       attr_accessor :source, :target
-
-      def initialize(moddle)
-        @source = moddle["source"]
-        @target = moddle["target"]
-      end
     end
 
-    class Script
+    class Script < Bpmn::Extension
       attr_accessor :expression, :result_variable
-
-      def initialize(moddle)
-        @expression = moddle["expression"]
-        @result_variable = moddle["resultVariable"]
-      end
     end
 
-    class Subscription
+    class Subscription < Bpmn::Extension
       attr_accessor :correlation_key
-
-      def initialize(moddle)
-        @correlation_key = moddle["correlationKey"]
-      end
     end
 
-    class TaskDefinition
+    class TaskDefinition < Bpmn::Extension
       attr_accessor :type, :retries
-
-      def initialize(moddle)
-        @type = moddle["type"]
-        @retries = moddle["retries"]
-      end
     end
 
-    class TaskSchedule
+    class TaskSchedule < Bpmn::Extension
       attr_accessor :due_date, :follow_up_date
-
-      def initialize(moddle)
-        @due_date = moddle["dueDate"]
-        @follow_up_date = moddle["followUpDate"]
-      end
     end
   end
 end

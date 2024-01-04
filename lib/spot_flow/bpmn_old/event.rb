@@ -1,30 +1,17 @@
 # frozen_string_literal: true
 
 module SpotFlow
-  module Bpmn2
+  module Bpmn
     class Event < Step
-      attr_accessor :event_definitions
+      attr_accessor :event_definitions, :event_definition_ids
 
-      def initialize(attributes = {})
-        super(attributes.except(:message_event_definition, :signal_event_definition, :error_event_definition))
-
+      def initialize(moddle)
+        super
         @event_definitions = []
-
-        Array.wrap(attributes[:message_event_definition]).each do |med|
-          @event_definitions.push MessageEventDefinition.new(med)
-        end if attributes[:message_event_definition].present?
-
-        Array.wrap(attributes[:signal_event_definition]).each do |sed|
-          @event_definitions.push SignalEventDefinition.new(sed)
-        end if attributes[:signal_event_definition].present?
-
-        Array.wrap(attributes[:error_event_definition]).each do |eed|
-          @event_definitions.push ErrorEventDefinition.new(eed)
-        end if attributes[:error_event_definition].present?
-      end
-
-      def event_definition_ids
-        event_definitions.map(&:id)
+        @event_definition_ids = []
+        @event_definition_ids = Array.wrap(moddle["eventDefinitions"]).map do |edm|
+          edm["id"]
+        end
       end
 
       def is_catching?
@@ -68,35 +55,35 @@ module SpotFlow
       end
 
       def conditional_event_definition
-        event_definitions.find { |ed| ed.is_a?(Bpmn2::ConditionalEventDefinition) }
+        event_definitions.find { |ed| ed.is_a?(Bpmn::ConditionalEventDefinition) }
       end
 
       def escalation_event_definition
-        event_definitions.find { |ed| ed.is_a?(Bpmn2::EscalationEventDefinition) }
+        event_definitions.find { |ed| ed.is_a?(Bpmn::EscalationEventDefinition) }
       end
 
       def error_event_definitions
-        event_definitions.select { |ed| ed.is_a?(Bpmn2::ErrorEventDefinition) }
+        event_definitions.select { |ed| ed.is_a?(Bpmn::ErrorEventDefinition) }
       end
 
       def error_event_definition
-        event_definitions.find { |ed| ed.is_a?(Bpmn2::ErrorEventDefinition) }
+        event_definitions.find { |ed| ed.is_a?(Bpmn::ErrorEventDefinition) }
       end
 
       def message_event_definitions
-        event_definitions.select { |ed| ed.is_a?(Bpmn2::MessageEventDefinition) }
+        event_definitions.select { |ed| ed.is_a?(Bpmn::MessageEventDefinition) }
       end
 
       def signal_event_definitions
-        event_definitions.select { |ed| ed.is_a?(Bpmn2::SignalEventDefinition) }
+        event_definitions.select { |ed| ed.is_a?(Bpmn::SignalEventDefinition) }
       end
 
       def terminate_event_definition
-        event_definitions.find { |ed| ed.is_a?(Bpmn2::TerminateEventDefinition) }
+        event_definitions.find { |ed| ed.is_a?(Bpmn::TerminateEventDefinition) }
       end
 
       def timer_event_definition
-        event_definitions.find { |ed| ed.is_a?(Bpmn2::TimerEventDefinition) }
+        event_definitions.find { |ed| ed.is_a?(Bpmn::TimerEventDefinition) }
       end
 
       def execute(execution)
@@ -147,12 +134,11 @@ module SpotFlow
     class BoundaryEvent < Event
       attr_accessor :attached_to_ref, :attached_to, :cancel_activity
 
-      def initialize(attributes = {})
-        super(attributes.except(:attached_to_ref, :cancel_activity))
-
-        @attached_to_ref = attributes[:attachedToRef]
+      def initialize(moddle)
+        super
+        @attached_to_ref = moddle[:attachedToRef]
         @cancel_activity = true
-        @cancel_activity = attributes[:cancel_activity] if attributes[:cancel_activit].present?
+        @cancel_activity = moddle["cancelActivity"] if moddle["cancelActivity"] != nil
       end
 
       def is_catching?

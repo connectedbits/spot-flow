@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
 module SpotFlow
-  module Bpmn2
+  module Bpmn
     class Flow < Element
       attr_accessor :source_ref, :target_ref
       attr_accessor :source, :target
 
-      def initialize(attributes = {})
-        super(attributes.except(:source_ref, :target_ref))
-
-        @source_ref = attributes[:source_ref]
-        @target_ref = attributes[:target_ref]
+      def initialize(moddle)
+        super
+        @source_ref = moddle["sourceRef"]
+        @target_ref = moddle["targetRef"]
         @source = nil
         @target = nil
       end
@@ -22,10 +21,9 @@ module SpotFlow
     class SequenceFlow < Flow
       attr_accessor :condition
 
-      def initialize(attributes = {})
-        super(attributes.except(:condition))
-
-        @condition = attributes[:condition_expression]
+      def initialize(moddle)
+        super
+        @condition = Expression.new(moddle["conditionExpression"]) if moddle["conditionExpression"]
       end
 
       def evaluate(execution)

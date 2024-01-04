@@ -5,11 +5,12 @@ module SpotFlow
     class Step < Element
       attr_accessor :incoming, :outgoing, :default
 
-      def initialize(moddle)
-        super
-        @incoming = []
-        @outgoing = []
-        @default = moddle["default"]
+      def initialize(attributes = {})
+        super(attributes.except(:incoming, :outgoing, :default))
+
+        @incoming = Array.wrap(attributes[:incoming]) || []
+        @outgoing = Array.wrap(attributes[:outgoing]) || []
+        @default = attributes[:default]
       end
 
       def diverging?
@@ -47,8 +48,9 @@ module SpotFlow
     class Activity < Step
       attr_accessor :attachments
 
-      def initialize(moddle)
-        super
+      def initialize(attributes = {})
+        super(attributes.except(:attachments))
+
         @attachments = []
       end
     end

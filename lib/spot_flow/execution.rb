@@ -38,7 +38,7 @@ module SpotFlow
     def self.from_json(attributes, context:)
       step_id = attributes.delete("step_id")
       step_type = attributes.delete("step_type")
-      step = step_type == "bpmn:Process" ? context.process_by_id(step_id) : context.element_by_id(step_id)
+      step = step_type == "Process" ? context.process_by_id(step_id) : context.element_by_id(step_id)
       child_attributes = attributes.delete("children")
       Execution.new(attributes.merge(step: step)).tap do |execution|
         execution.children = child_attributes.map { |ca| Execution.from_json(ca, context: context) } if child_attributes
@@ -260,7 +260,7 @@ module SpotFlow
       {
         id: id,
         step_id: step&.id,
-        step_type: step&.type,
+        step_type: step&.class&.name&.demodulize,
         attached_to_id: attached_to_id,
         status: status,
         started_at: started_at,
@@ -341,7 +341,7 @@ module SpotFlow
     end
 
     def print_child(child, index)
-      str = "#{index} #{child.step.type.split(':').last} #{child.step.id}: #{child.status} #{JSON.pretty_generate(child.variables, { indent: '', object_nl: ' ' }) unless child.variables.empty? }".strip
+      str = "#{index} #{child.step.class.name.demodulize} #{child.step.id}: #{child.status} #{JSON.pretty_generate(child.variables, { indent: '', object_nl: ' ' }) unless child.variables.empty? }".strip
       str = "#{str} * in: #{child.tokens_in.join(', ')}" if child.tokens_in.present?
       str = "#{str} * out: #{child.tokens_out.join(', ')}" if child.tokens_out.present?
       puts str

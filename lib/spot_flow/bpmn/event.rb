@@ -3,15 +3,28 @@
 module SpotFlow
   module Bpmn
     class Event < Step
-      attr_accessor :event_definitions, :event_definition_ids
+      attr_accessor :event_definitions
 
-      def initialize(moddle)
-        super
+      def initialize(attributes = {})
+        super(attributes.except(:message_event_definition, :signal_event_definition, :error_event_definition))
+
         @event_definitions = []
-        @event_definition_ids = []
-        @event_definition_ids = Array.wrap(moddle["eventDefinitions"]).map do |edm|
-          edm["id"]
-        end
+
+        Array.wrap(attributes[:message_event_definition]).each do |med|
+          @event_definitions.push MessageEventDefinition.new(med)
+        end if attributes[:message_event_definition].present?
+
+        Array.wrap(attributes[:signal_event_definition]).each do |sed|
+          @event_definitions.push SignalEventDefinition.new(sed)
+        end if attributes[:signal_event_definition].present?
+
+        Array.wrap(attributes[:error_event_definition]).each do |eed|
+          @event_definitions.push ErrorEventDefinition.new(eed)
+        end if attributes[:error_event_definition].present?
+      end
+
+      def event_definition_ids
+        event_definitions.map(&:id)
       end
 
       def is_catching?
@@ -134,11 +147,12 @@ module SpotFlow
     class BoundaryEvent < Event
       attr_accessor :attached_to_ref, :attached_to, :cancel_activity
 
-      def initialize(moddle)
-        super
-        @attached_to_ref = moddle[:attachedToRef]
+      def initialize(attributes = {})
+        super(attributes.except(:attached_to_ref, :cancel_activity))
+
+        @attached_to_ref = attributes[:attachedToRef]
         @cancel_activity = true
-        @cancel_activity = moddle["cancelActivity"] if moddle["cancelActivity"] != nil
+        @cancel_activity = attributes[:cancel_activity] if attributes[:cancel_activit].present?
       end
 
       def is_catching?

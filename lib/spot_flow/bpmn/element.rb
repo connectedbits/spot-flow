@@ -3,25 +3,14 @@
 module SpotFlow
   module Bpmn
     class Element
-      attr_accessor :type, :id, :name, :extension_elements
+      include ActiveModel::Model
 
-      def initialize(moddle)
-        @type = moddle["$type"]
-        @id = moddle["id"]
-        @name = moddle["name"]
-        @extension_elements = ExtensionElements.new(moddle["extensionElements"]) if moddle["extensionElements"].present?
-      end
+      attr_accessor :id, :name, :extension_elements
 
-      def self.from_moddle(moddle)
-        return nil if moddle["$type"].start_with?("bpmndi")
-        begin
-          if klass = "SpotFlow::Bpmn::#{moddle["$type"].split(':').last}".safe_constantize
-            klass.new(moddle)
-          else
-            ap "Error creating instance of #{moddle["$type"]}"
-            Element.new(moddle)
-          end
-        end
+      def initialize(attributes = {})
+        super(attributes.slice(:id, :name))
+
+        @extension_elements = ExtensionElements.new(attributes[:extension_elements]) if attributes[:extension_elements].present?
       end
     end
 
@@ -43,9 +32,8 @@ module SpotFlow
     class Participant < Element
       attr_accessor :process_ref, :process
 
-      def initialize(moddle)
-        super
-        @process_ref = moddle["processRef"]
+      def initialize(attributes = {})
+        super(attributes.except(:process_ref))
       end
     end
   end

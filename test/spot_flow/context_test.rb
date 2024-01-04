@@ -13,7 +13,7 @@ module SpotFlow
 
       it "should call the listener" do
         context.start
-        _(log.size).must_equal 8
+        _(log.size).must_equal 6
       end
     end
   end

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SpotFlow
-  module Bpmn2
+  module Bpmn
     class Definitions
       include ActiveModel::Model
 

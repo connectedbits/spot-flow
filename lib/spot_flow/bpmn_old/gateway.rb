@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module SpotFlow
-  module Bpmn2
+  module Bpmn
     class Gateway < Step
 
       def execute(execution)
@@ -70,6 +70,8 @@ module SpotFlow
     end
 
     class EventBasedGateway < Gateway
+      # RULE: All flows are taken
+
       #
       # RULE: when an event created from an event gateway is caught,
       # all other waiting events must be canceled.

@@ -3,7 +3,7 @@
 require "test_helper"
 
 module SpotFlow
-  module Bpmn2
+  module Bpmn
     describe Process do
       describe :from_xml do
         describe :hello_world do

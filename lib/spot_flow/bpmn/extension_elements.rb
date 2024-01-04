@@ -7,23 +7,20 @@ module SpotFlow
 
       attr_accessor :assignment_definition, :called_decision, :form_definition, :io_mapping, :properties, :script, :subscription, :task_definition, :task_schedule
 
-      def initialize(moddle)
-        moddle["values"].each do |moddle_value|
-          extension_type = moddle_value["$type"]
-          if extension_type == "zeebe:Properties"
-            @properties = {}
-            moddle_value["properties"].each { |property_moddle| @properties[property_moddle["name"]] = property_moddle["value"] } if moddle_value["properties"].present?
-          else
-            extension_parts = extension_type.split(":")
-            namespace = extension_parts.first
-            raise "Unsupported extension namespace: #{namespace}" unless VALID_EXTENSION_NAMESPACES.include?(namespace)
-            if klass = "SpotFlow::#{extension_parts.first.capitalize}::#{extension_parts.last}".safe_constantize
-              send("#{extension_parts.last.underscore}=", klass.new(moddle_value))
-            else
-              raise "Unknown extension type: #{extension_type}"
-            end
-          end
+      def initialize(attributes = {})
+        if attributes[:properties].present?
+          @properties = HashWithIndifferentAccess.new
+          Array.wrap(attributes[:properties][:property]).each { |property_moddle| @properties[property_moddle[:name]] = property_moddle[:value] }
         end
+
+        @assignment_definition = Zeebe::AssignmentDefinition.new(attributes[:assignment_definition]) if attributes[:assignment_definition].present?
+        @called_decision = Zeebe::CalledDecision.new(attributes[:called_decision]) if attributes[:called_decision].present?
+        @form_definition = Zeebe::FormDefinition.new(attributes[:form_definition]) if attributes[:form_definition].present?
+        @io_mapping = Zeebe::IoMapping.new(attributes[:io_mapping]) if attributes[:io_mapping].present?
+        @script = Zeebe::Script.new(attributes[:script]) if attributes[:script].present?
+        @subscription = Zeebe::Subscription.new(attributes[:subscription]) if attributes[:subscription].present?
+        @task_definition = Zeebe::TaskDefinition.new(attributes[:task_definition]) if attributes[:task_definition].present?
+        @task_schedule = Zeebe::TaskSchedule.new(attributes[:task_schedule]) if attributes[:task_schedule].present?
       end
     end
   end

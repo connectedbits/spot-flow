@@ -70,8 +70,6 @@ module SpotFlow
     end
 
     class EventBasedGateway < Gateway
-      # RULE: All flows are taken
-
       #
       # RULE: when an event created from an event gateway is caught,
       # all other waiting events must be canceled.

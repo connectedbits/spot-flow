@@ -1,16 +1,15 @@
 # frozen_string_literal: true
 
 module SpotFlow
-  module Bpmn2
+  module Bpmn
     class Step < Element
       attr_accessor :incoming, :outgoing, :default
 
-      def initialize(attributes = {})
-        super(attributes.except(:incoming, :outgoing, :default))
-
+      def initialize(moddle)
+        super
         @incoming = []
         @outgoing = []
-        @default = attributes[:default]
+        @default = moddle["default"]
       end
 
       def diverging?
@@ -48,9 +47,8 @@ module SpotFlow
     class Activity < Step
       attr_accessor :attachments
 
-      def initialize(attributes = {})
-        super(attributes.except(:attachments))
-
+      def initialize(moddle)
+        super
         @attachments = []
       end
     end
