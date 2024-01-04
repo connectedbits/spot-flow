@@ -11,27 +11,9 @@ require "active_model"
 
 require "spot_feel"
 
-# require "spot_flow/bpmn/element"
-# require "spot_flow/bpmn/step"
-# require "spot_flow/bpmn/flow"
-# require "spot_flow/bpmn/task"
-# require "spot_flow/bpmn/event"
-# require "spot_flow/bpmn/extensions"
-# require "spot_flow/bpmn/extension_elements"
-# require "spot_flow/bpmn/gateway"
-# require "spot_flow/bpmn/builder"
-# require "spot_flow/bpmn/process"
-# require "spot_flow/bpmn/expression"
-# require "spot_flow/bpmn/event_definition"
-
 require "spot_flow/bpmn"
-
 require "spot_flow/context"
 require "spot_flow/execution"
-
-require "spot_flow/services/application_service"
-require "spot_flow/services/decision_reader"
-require "spot_flow/services/process_reader"
 
 module SpotFlow
   include ActiveSupport::Configurable
