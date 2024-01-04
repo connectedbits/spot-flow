@@ -116,8 +116,8 @@ module SpotFlow
         it "should create boundary events" do
           _(execution.started?).must_equal true
           _(host_task.waiting?).must_equal true
-          _(non_interrupting_event).wont_be_nil
-          _(interrupting_event).wont_be_nil
+          _(non_interrupting_event.waiting?).must_equal true
+          _(interrupting_event.waiting?).must_equal true
         end
 
         describe :happy_path do

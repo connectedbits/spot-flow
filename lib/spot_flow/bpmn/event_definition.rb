@@ -108,8 +108,8 @@ module SpotFlow
       def initialize(attributes = {})
         super(attributes.except(:time_date, :time_duration, :time_cycle))
 
-        @time_duration_type = moddle[:time_duration_type]
-        @time_duration = moddle[:time_duration]
+        @time_duration_type = attributes[:time_duration_type]
+        @time_duration = attributes[:time_duration]
       end
 
       def execute(execution)

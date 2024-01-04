@@ -32,7 +32,7 @@ module SpotFlow
 
     describe :execution do
       let(:execution) { SpotFlow.new(xml).start }
-      let(:waiting_step) { execution.waiting_tasks.first }
+      let(:waiting_step) { execution.child_by_step_id("SayHello") }
 
       it "should initialize the context" do
         _(execution.started?).must_equal true

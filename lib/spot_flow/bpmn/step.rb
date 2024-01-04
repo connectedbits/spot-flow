@@ -3,14 +3,14 @@
 module SpotFlow
   module Bpmn
     class Step < Element
-      attr_accessor :incoming, :outgoing, :default
+      attr_accessor :incoming, :outgoing, :default, :default_ref
 
       def initialize(attributes = {})
         super(attributes.except(:incoming, :outgoing, :default))
 
         @incoming = Array.wrap(attributes[:incoming]) || []
         @outgoing = Array.wrap(attributes[:outgoing]) || []
-        @default = attributes[:default]
+        @default_ref = attributes[:default]
       end
 
       def diverging?

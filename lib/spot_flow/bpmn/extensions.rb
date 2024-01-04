@@ -21,19 +21,13 @@ module SpotFlow
     end
 
     class IoMapping < Bpmn::Extension
+      attr_reader :inputs, :outputs
+
       def initialize(attributes = {})
-        super
+        super(attributes.except(:input, :output))
 
-        @inputs = attributes[:input_parameters] || []
-        @outputs = attributes[:output_parameters] || []
-      end
-
-      def inputs
-        @inputs.map { |parameter_moddle| Parameter.new(parameter_moddle) }
-      end
-
-      def outputs
-        @outputs.map { |parameter_moddle| Parameter.new(parameter_moddle) }
+        @inputs = Array.wrap(attributes[:input]).map { |atts| Parameter.new(atts) } if attributes[:input].present?
+        @outputs = Array.wrap(attributes[:output]).map { |atts| Parameter.new(atts) } if attributes[:output].present?
       end
     end
 

@@ -104,7 +104,7 @@ module SpotFlow
       @started_at = Time.zone.now
       map_input_variables if step&.input_mappings&.present?
       context.notify_listener(:execution_started, execution: self)
-      step.attachments.each { |attachment| parent.execute_step(attachment, attached_to: self) } if step.is_a?(Bpmn::Activity)
+      step.attachments.each { |attachment| parent.execute_step(attachment, attached_to: self) } if step.is_a?(SpotFlow::Bpmn::Activity)
       continue
     end
 
@@ -154,7 +154,7 @@ module SpotFlow
     def throw_message(message_name, variables: {})
       waiting_children.each do |child|
         step = child.step
-        if step.is_a?(Bpmn::Event) && step.message_event_definitions.any? { |message_event_definition| message_event_definition.message_name == message_name }
+        if step.is_a?(SpotFlow::Bpmn::Event) && step.message_event_definitions.any? { |message_event_definition| message_event_definition.message_name == message_name }
           child.signal(variables)
           break
         end
@@ -165,7 +165,7 @@ module SpotFlow
     def throw_error(error_name, variables: {})
       waiting_children.each do |child|
         step = child.step
-        if step.is_a?(Bpmn::Event) && step.error_event_definitions.any? { |error_event_definition| error_event_definition.error_name == error_name }
+        if step.is_a?(SpotFlow::Bpmn::Event) && step.error_event_definitions.any? { |error_event_definition| error_event_definition.error_name == error_name }
           child.signal(variables)
           break
         end
@@ -178,7 +178,7 @@ module SpotFlow
     end
 
     def evaluate_condition(condition)
-      evaluate_expression(condition.body) == true
+      evaluate_expression(condition.delete_prefix("=")) == true
     end
 
     def evaluate_expression(expression, variables: parent.variables)
@@ -197,9 +197,9 @@ module SpotFlow
         service = context.services[step.task_type]
         result = service.call(parent.variables) if service.present?
       else
-        if step.type == "bpmn:ScriptTask" && step.script.present?
+        if step.class == Bpmn::ScriptTask && step.script.present?
           result = evaluate_expression(step.script, variables: parent.variables)
-        elsif step.type == "bpmn:BusinessRuleTask" && step.decision_id.present?
+        elsif step.class == Bpmn::BusinessRuleTask && step.decision_id.present?
           result = SpotFeel.decide(step.decision_id, definitions: context.dmn_definitions_by_decision_id(step.decision_id), variables: parent.variables)
         end
       end
@@ -219,7 +219,7 @@ module SpotFlow
     # Called by the child step executors when they have ended
     #
     def has_ended(_child)
-      step.leave(self) if step.is_a?(Bpmn::SubProcess) || step.is_a?(Bpmn::CallActivity)
+      step.leave(self) if step.is_a?(SpotFlow::Bpmn::SubProcess) || step.is_a?(SpotFlow::Bpmn::CallActivity)
       self.end(true)
     end
 
@@ -236,7 +236,7 @@ module SpotFlow
     end
 
     def waiting_tasks
-      waiting_children.select { |child| child.step.is_a?(Bpmn::Task) }
+      waiting_children.select { |child| child.step.is_a?(SpotFlow::Bpmn::Task) }
     end
 
     def waiting_automated_tasks

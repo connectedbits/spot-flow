@@ -2,7 +2,7 @@
 
 module SpotFlow
   module Bpmn
-    module ProcessBehavior
+    class Process < Step
       attr_accessor :is_executable
 
       attr_accessor :start_events, :end_events, :intermediate_catch_events, :intermediate_throw_events, :boundary_events
@@ -13,6 +13,31 @@ module SpotFlow
       attr_accessor :gateways, :exclusive_gateways, :parallel_gateways, :inclusive_gateways, :event_based_gateways, :complex_gateways
 
       attr_accessor :parent
+
+      def initialize(attributes = {})
+        super(attributes.slice(:id, :name, :extension_elements, :incoming, :outgoing, :default))
+
+        @is_executable = attributes[:is_executable] == ("true" || true)
+
+        @start_events = Array.wrap(attributes[:start_event]).map { |se| StartEvent.new(se) }
+        @end_events = Array.wrap(attributes[:end_event]).map { |ee| EndEvent.new(ee) }
+        @intermediate_catch_events = Array.wrap(attributes[:intermediate_catch_event]).map { |ice| IntermediateCatchEvent.new(ice) }
+        @intermediate_throw_events = Array.wrap(attributes[:intermediate_throw_event]).map { |ite| IntermediateThrowEvent.new(ite) }
+        @boundary_events = Array.wrap(attributes[:boundary_event]).map { |be| BoundaryEvent.new(be) }
+        @tasks = Array.wrap(attributes[:task]).map { |t| Task.new(t) }
+        @user_tasks = Array.wrap(attributes[:user_task]).map { |ut| UserTask.new(ut) }
+        @service_tasks = Array.wrap(attributes[:service_task]).map { |st| ServiceTask.new(st) }
+        @script_tasks = Array.wrap(attributes[:script_task]).map { |st| ScriptTask.new(st) }
+        @business_rule_tasks = Array.wrap(attributes[:business_rule_task]).map { |brt| BusinessRuleTask.new(brt) }
+        @call_activities = Array.wrap(attributes[:call_activitie]).map { |ca| CallActivity.new(ca) }
+        @sub_processes = Array.wrap(attributes[:sub_process]).map { |sp| SubProcess.new(sp) }
+        @ad_hoc_sub_processes = Array.wrap(attributes[:ad_hoc_sub_processe]).map { |ahsp| AdHocSubProcess.new(ahsp) }
+        @exclusive_gateways = Array.wrap(attributes[:exclusive_gateway]).map { |eg| ExclusiveGateway.new(eg) }
+        @parallel_gateways = Array.wrap(attributes[:parallel_gateway]).map { |pg| ParallelGateway.new(pg) }
+        @inclusive_gateways = Array.wrap(attributes[:inclusive_gateway]).map { |ig| InclusiveGateway.new(ig) }
+        @event_based_gateways = Array.wrap(attributes[:event_based_gateway]).map { |ebg| EventBasedGateway.new(ebg) }
+        @sequence_flows = Array.wrap(attributes[:sequence_flow]).map { |sf| SequenceFlow.new(sf) }
+      end
 
       def elements
         @elements ||= {}.tap do |elements|
@@ -44,21 +69,33 @@ module SpotFlow
             element.outgoing = element.outgoing.map { |id| element_by_id(id) }
 
             if element.is_a?(Event)
+
               element.event_definitions.each do |event_definition|
-                case event_definition.class
-                when Bpmn::MessageEventDefinition
-                  event_definition.message = element.element_by_id(definitions.message_by_id(event_definition.message_ref))
-                when Bpmn::SignalEventDefinition
-                  event_definition.signal = element.element_by_id(definitions.signal_by_id(event_definition.signal_ref))
-                when Bpmn::ErrorEventDefinition
-                  event_definition.error = element.element_by_id(definitions.error_by_id(event_definition.error_ref))
+                if event_definition.is_a?(MessageEventDefinition)
+                  event_definition.message = definitions.message_by_id(event_definition.message_ref)
+                elsif event_definition.is_a?(SignalEventDefinition)
+                  event_definition.signal = definitions.signal_by_id(event_definition.signal_ref)
+                elsif event_definition.is_a?(ErrorEventDefinition)
+                  event_definition.error = definitions.error_by_id(event_definition.error_ref)
                 end
               end
+
+              if element.is_a?(BoundaryEvent)
+                host_element = element_by_id(element.attached_to_ref)
+                host_element.attachments << element
+                element.attached_to = host_element
+              end
+
             end
+
             if element.is_a?(Gateway)
-              # TODO: is this right?
-              #element.default = element.element_by_id(element.default_ref)
+              element.default = element_by_id(element.default_ref)
             end
+
+            if element.is_a?(SubProcess)
+              element.wire_references(definitions)
+            end
+
           elsif element.is_a?(SequenceFlow)
             element.source = element_by_id(element.source_ref)
             element.target = element_by_id(element.target_ref)
@@ -87,39 +124,7 @@ module SpotFlow
       end
     end
 
-    class Process < Step
-      include ProcessBehavior
-
-      def initialize(attributes = {})
-        super(attributes.slice(:id, :name, :extension_elements, :incoming, :outgoing, :default))
-
-        @is_executable = attributes[:is_executable] == ("true" || true)
-
-        @start_events = Array.wrap(attributes[:start_event]).map { |se| StartEvent.new(se) }
-        @end_events = Array.wrap(attributes[:end_event]).map { |ee| EndEvent.new(ee) }
-        @intermediate_catch_events = Array.wrap(attributes[:intermediate_catch_event]).map { |ice| IntermediateCatchEvent.new(ice) }
-        @intermediate_throw_events = Array.wrap(attributes[:intermediate_throw_event]).map { |ite| IntermediateThrowEvent.new(ite) }
-        @boundary_events = Array.wrap(attributes[:boundary_event]).map { |be| BoundaryEvent.new(be) }
-        @tasks = Array.wrap(attributes[:task]).map { |t| Task.new(t) }
-        @user_tasks = Array.wrap(attributes[:user_task]).map { |ut| UserTask.new(ut) }
-        @service_tasks = Array.wrap(attributes[:service_task]).map { |st| ServiceTask.new(st) }
-        @script_tasks = Array.wrap(attributes[:script_task]).map { |st| ScriptTask.new(st) }
-        @business_rule_tasks = Array.wrap(attributes[:business_rule_task]).map { |brt| BusinessRuleTask.new(brt) }
-        @call_activities = Array.wrap(attributes[:call_activitie]).map { |ca| CallActivity.new(ca) }
-        @sub_processes = Array.wrap(attributes[:sub_processe]).map { |sp| SubProcess.new(sp) }
-        @ad_hoc_sub_processes = Array.wrap(attributes[:ad_hoc_sub_processe]).map { |ahsp| AdHocSubProcess.new(ahsp) }
-        @exclusive_gateways = Array.wrap(attributes[:exclusive_gateway]).map { |eg| ExclusiveGateway.new(eg) }
-        @parallel_gateways = Array.wrap(attributes[:parallel_gateway]).map { |pg| ParallelGateway.new(pg) }
-        @inclusive_gateways = Array.wrap(attributes[:inclusive_gateway]).map { |ig| InclusiveGateway.new(ig) }
-        @event_based_gateways = Array.wrap(attributes[:event_based_gateway]).map { |ebg| EventBasedGateway.new(ebg) }
-        @sub_processes = Array.wrap(attributes[:sub_processe]).map { |sp| SubProcess.new(sp) }
-        @sequence_flows = Array.wrap(attributes[:sequence_flow]).map { |sf| SequenceFlow.new(sf) }
-      end
-    end
-
-    class SubProcess < Activity
-      include ProcessBehavior
-
+    class SubProcess < Process
       attr_accessor :triggered_by_event
 
       def initialize(attributes = {})

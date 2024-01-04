@@ -29,7 +29,7 @@ module SpotFlow
       end
 
       def evaluate(execution)
-        return true unless condition&.body
+        return true unless condition
         execution.evaluate_condition(condition)
       end
     end

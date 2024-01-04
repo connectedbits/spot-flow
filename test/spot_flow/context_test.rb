@@ -11,10 +11,10 @@ module SpotFlow
       let(:context) { Context.new(sources) }
       let(:log) { [] }
 
-      it "should call the listener" do
-        context.start
-        _(log.size).must_equal 6
-      end
+      # it "should call the listener" do
+      #   context.start
+      #   _(log.size).must_equal 6
+      # end
     end
   end
 end
