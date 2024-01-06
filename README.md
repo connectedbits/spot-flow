@@ -56,7 +56,7 @@ step = execution.step_by_element_id("IntroduceYourself")
 step.signal(name: "Eric", language: "it", formal: false, cookie: true)
 ```
 
-After the IntroduceYourself task is signaled, the execution continues.
+After the IntroduceYourself task is _signaled_, the execution continues.
 
 ```ruby
 HelloWorld started * Flow_0gi9kt6, Flow_0pb7kh6
@@ -77,13 +77,13 @@ HelloWorld started * Flow_0gi9kt6, Flow_0pb7kh6
 6 ServiceTask ChooseFortune: waiting * in: Flow_0pb7kh6
 ```
 
-When execution reaches the Split inclusive gateway, it forks into two paths. The first path is _waiting_ at the ChooseGreeting business rule task. The second reaches the WantsCookie exclusive gateway and evaluates the sequence flows before continuing to the ChooseFortune service task. Automated tasks can be `run` individually by the engine or `run_automated_tasks` to run all waiting tasks.
+When execution reaches the Split inclusive gateway, it forks into two paths. The first path is _waiting_ at the ChooseGreeting business rule task. The second reaches the WantsCookie exclusive gateway and _evaluates_ the sequence flow conditions before continuing to the ChooseFortune service task. Automated tasks can be `run` individually by the engine or `run_automated_tasks` to run all _waiting_ tasks.
 
 ```ruby
 execution.run_automated_tasks
 ```
 
-Now, both paths are joined into one and we _wait_ at the script task. Notice, the results of previous tasks are merged into the process variables.
+Now, both paths are joined into one and execution is _waiting_ at the script task. Notice, the results of previous tasks are merged into the process variables.
 
 ```ruby
 HelloWorld started * Flow_0ws7a4m
