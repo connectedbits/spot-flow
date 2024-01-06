@@ -74,7 +74,7 @@
       <bpmn:incoming>Flow_066or8a</bpmn:incoming>
       <bpmn:outgoing>Flow_0ws7a4m</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:exclusiveGateway id="WantsCookie" name="cookie?">
+    <bpmn:exclusiveGateway id="WantsCookie" name="User wants cookie?">
       <bpmn:incoming>Flow_0q1vtg3</bpmn:incoming>
       <bpmn:outgoing>Flow_0pb7kh6</bpmn:outgoing>
       <bpmn:outgoing>Flow_066or8a</bpmn:outgoing>
@@ -131,7 +131,7 @@
       <bpmndi:BPMNShape id="Gateway_1cphbnd_di" bpmnElement="WantsCookie" isMarkerVisible="true">
         <dc:Bounds x="555" y="255" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="561" y="312" width="38" height="14" />
+          <dc:Bounds x="552" y="312" width="56" height="27" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1mct1pe_di" bpmnElement="EggTimer">
