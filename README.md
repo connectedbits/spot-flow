@@ -32,7 +32,7 @@ HelloWorld started * Flow_080794y
 2 BoundaryEvent EggTimer: waiting
 ```
 
-The 'HelloWorld' process began at the 'Start' event and is `waiting` at the 'IntroduceYourself' user task. This is an important concept in the SpotFlow engine. It's designed to be used in a Rails application where a process might be waiting for a user to complete a form, or a background job to complete. It's common to save the state the process until a task is complete. Calling `serialize` on a process will return the execution state so it can be continued later.
+The HelloWorld process began at the Start event and is _waiting_ at the IntroduceYourself user task. This is an important concept in the SpotFlow engine. It's designed to be used in a Rails application where a process might be waiting for a user to complete a form, or a background job to complete. It's common to save the state the process until a task is complete. Calling `serialize` on a process will return the execution state so it can be continued later.
 
 ```ruby
 # Returns a hash of the process state.
@@ -49,7 +49,7 @@ step = execution.step_by_element_id("IntroduceYourself")
 step.signal(name: "Eric", language: "it", formal: false, cookie: true)
 ```
 
-Now the 'IntroduceYourself' task is completed, it's result is merged into the process variables, and execution continues.
+Now the IntroduceYourself task is _completed_, it's result is merged into the process variables, and execution continues.
 
 ```ruby
 HelloWorld started * Flow_0gi9kt6, Flow_0pb7kh6
@@ -70,13 +70,18 @@ HelloWorld started * Flow_0gi9kt6, Flow_0pb7kh6
 6 ServiceTask ChooseFortune: waiting * in: Flow_0pb7kh6
 ```
 
-When execution reached the `Split` gateway, it split into two paths. The first path is waiting at the `ChooseGreeting` business rule task. The second path evaluated the sequence flows after the WantsCookie execlusive gateway and is waiting at the `ChooseFortune` service task. Automated tasks (service, business rule, or script tasks) can be `run` by the engine. All automated tasks can be run by calling `run_automated_tasks`.
+When execution reaches the Split inclusive gateway, it forks into two paths. The first path is waiting at the ChooseGreeting business rule task. The second reaches the WantsCookie exclusive gateway and evaluates the sequence flows before continuing to the ChooseFortune service task. Automated tasks (service, business rule, or script tasks) can be `run` by the engine. To run all automated tasks, call `run_automated_tasks`. Each task type has different behavior.
+
+- Task and UserTask (manual): requires a signal to continue.
+- ServiceTask (automated): can be signaled or run. If run, instantiates the type defined in the task definition and invokes `call` on the instance.
+- BusinessRuleTask (automated): evaluates the decision_id (expects dmn source to be included in the context).
+- ScriptTask (automated): evaluates the FEEL expression in the script property.
 
 ```ruby
 execution.run_automated_tasks
 ```
 
-Now, both paths are joined into one and we wait at the script task. Notice, the results of previous tasks are merged into the process variables.
+Now, both paths are joined into one and we `wait` at the script task. Notice, the results of previous tasks are merged into the process variables.
 
 ```ruby
 HelloWorld started * Flow_0ws7a4m
@@ -103,7 +108,7 @@ HelloWorld started * Flow_0ws7a4m
 8 ScriptTask GenerateMessage: waiting * in: Flow_0ws7a4m
 ```
 
-This time we'll run the script task manually.
+This time we'll `run` the script task manually.
 
 ```ruby
 step = execution.step_by_element_id("GenerateMessage")
