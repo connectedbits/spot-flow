@@ -3,7 +3,7 @@
 require "test_helper"
 
 class ChooseFortuneService
-  def call(_variables)
+  def call(_variables, _headers)
     [
       "The fortune you seek is in another cookie.",
       "A closed mouth gathers no feet.",
