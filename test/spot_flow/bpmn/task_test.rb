@@ -2,9 +2,14 @@
 
 require "test_helper"
 
+class ServiceTask
+  def call(variables, headers)
+    "👋 #{headers[:greeting]} #{variables[:name]}!"
+  end
+end
+
 module SpotFlow
   module Bpmn
-
     describe Task do
       let(:sources) { fixture_source("task_test.bpmn") }
       let(:context) { SpotFlow.new(sources) }
@@ -53,31 +58,24 @@ module SpotFlow
         let(:service_task) { process.element_by_id("ServiceTask") }
 
         it "should parse the service task" do
-          _(service_task.task_type).must_equal "do_it"
+          _(service_task.task_type).must_equal "ServiceTask"
         end
       end
 
       describe :execution do
         before do
           @execution = context.start(variables: { name: "Eric" })
+          service_task.run
         end
 
         let(:execution) { @execution }
-        let(:service_step) { execution.child_by_step_id("ServiceTask") }
+        let(:service_task) { execution.child_by_step_id("ServiceTask") }
 
-        it "should wait at the service task" do
-          _(service_step.waiting?).must_equal true
-        end
-
-        describe :run do
-          before { service_step.signal({ "service_task": "👋 Hello Eric!" }) }
-
-          it "should run the service task" do
-            _(execution.completed?).must_equal true
-            _(service_step.completed?).must_equal true
-            _(execution.variables["service_task"]).must_equal "👋 Hello Eric!"
-            _(service_step.variables["service_task"]).must_equal "👋 Hello Eric!"
-          end
+        it "should run the service task" do
+          _(execution.completed?).must_equal true
+          _(service_task.completed?).must_equal true
+          _(execution.variables["service_task"]).must_equal "👋 Bonjour Eric!"
+          _(service_task.variables["service_task"]).must_equal "👋 Bonjour Eric!"
         end
       end
     end

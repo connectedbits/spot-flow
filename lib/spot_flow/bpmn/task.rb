@@ -59,10 +59,14 @@ module SpotFlow
         extension_elements&.task_definition&.type
       end
 
+      def headers
+        extension_elements&.task_headers&.headers
+      end
+
       def run(execution)
         if defined?(task_type)
           klass = task_type.constantize
-          klass.new.call(execution.parent.variables)
+          klass.new.call(execution.parent.variables, headers || {})
         end
       end
     end

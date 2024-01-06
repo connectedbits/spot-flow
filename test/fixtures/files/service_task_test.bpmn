@@ -11,7 +11,11 @@
     <bpmn:sequenceFlow id="Flow_1rnbtwj" sourceRef="ServiceTask" targetRef="End" />
     <bpmn:serviceTask id="ServiceTask" name="Service Task">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="do_it" />
+        <zeebe:taskDefinition type="ServiceTask" retries="3" />
+        <zeebe:taskHeaders>
+          <zeebe:header key="greeting" value="Bonjour" />
+          <zeebe:header key="another_key" value="another_value" />
+        </zeebe:taskHeaders>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1qhq8g6</bpmn:incoming>
       <bpmn:outgoing>Flow_1rnbtwj</bpmn:outgoing>
@@ -19,14 +23,6 @@
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ServiceTaskTest">
-      <bpmndi:BPMNEdge id="Flow_1rnbtwj_di" bpmnElement="Flow_1rnbtwj">
-        <di:waypoint x="370" y="97" />
-        <di:waypoint x="422" y="97" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1qhq8g6_di" bpmnElement="Flow_1qhq8g6">
-        <di:waypoint x="215" y="97" />
-        <di:waypoint x="270" y="97" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="Start">
         <dc:Bounds x="179" y="79" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -42,6 +38,14 @@
       <bpmndi:BPMNShape id="Activity_0czgv2r_di" bpmnElement="ServiceTask">
         <dc:Bounds x="270" y="57" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1qhq8g6_di" bpmnElement="Flow_1qhq8g6">
+        <di:waypoint x="215" y="97" />
+        <di:waypoint x="270" y="97" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1rnbtwj_di" bpmnElement="Flow_1rnbtwj">
+        <di:waypoint x="370" y="97" />
+        <di:waypoint x="422" y="97" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

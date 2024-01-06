@@ -47,6 +47,17 @@ module SpotFlow
       attr_accessor :type, :retries
     end
 
+    class TaskHeaders < Bpmn::Extension
+      attr_accessor :headers
+
+      def initialize(attributes = {})
+        super(attributes.except(:header))
+
+        @headers = HashWithIndifferentAccess.new
+        Array.wrap(attributes[:header]).each { |header| @headers[header[:key]] = header[:value] }
+      end
+    end
+
     class TaskSchedule < Bpmn::Extension
       attr_accessor :due_date, :follow_up_date
     end
