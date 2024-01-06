@@ -8,7 +8,14 @@ The engine executes business processes like [this one](/test/fixtures/files/hell
 
 ![Example](test/fixtures/files/hello_world.png)
 
-To start the process, initialize Spot Flow with the BPMN and DMN source files, then call `start`.
+Processes are made of a series of tasks. Tasks can be manual (require `signal` to be called) or automated (can be `run` by the engine). The engine supports the following task types:
+
+- Task and UserTask (manual): requires a signal to continue.
+- ServiceTask (automated): instantiates a type defined in the task definition and invokes `call` on it.
+- BusinessRuleTask (automated): evaluates the decision_id (expects dmn source to be included in the context).
+- ScriptTask (automated): evaluates the FEEL expression in the script property.
+
+To start the process, initialize SpotFlow with the BPMN and DMN source files, then call `start`.
 
 ```ruby
 sources = [
@@ -49,7 +56,7 @@ step = execution.step_by_element_id("IntroduceYourself")
 step.signal(name: "Eric", language: "it", formal: false, cookie: true)
 ```
 
-Now the IntroduceYourself task is _completed_, it's result is merged into the process variables, and execution continues.
+After the IntroduceYourself task is signaled, the execution continues.
 
 ```ruby
 HelloWorld started * Flow_0gi9kt6, Flow_0pb7kh6
@@ -70,18 +77,13 @@ HelloWorld started * Flow_0gi9kt6, Flow_0pb7kh6
 6 ServiceTask ChooseFortune: waiting * in: Flow_0pb7kh6
 ```
 
-When execution reaches the Split inclusive gateway, it forks into two paths. The first path is waiting at the ChooseGreeting business rule task. The second reaches the WantsCookie exclusive gateway and evaluates the sequence flows before continuing to the ChooseFortune service task. Automated tasks (service, business rule, or script tasks) can be `run` by the engine. To run all automated tasks, call `run_automated_tasks`. Each task type has different behavior.
-
-- Task and UserTask (manual): requires a signal to continue.
-- ServiceTask (automated): can be signaled or run. If run, instantiates the type defined in the task definition and invokes `call` on the instance.
-- BusinessRuleTask (automated): evaluates the decision_id (expects dmn source to be included in the context).
-- ScriptTask (automated): evaluates the FEEL expression in the script property.
+When execution reaches the Split inclusive gateway, it forks into two paths. The first path is _waiting_ at the ChooseGreeting business rule task. The second reaches the WantsCookie exclusive gateway and evaluates the sequence flows before continuing to the ChooseFortune service task. Automated tasks can be `run` individually by the engine or `run_automated_tasks` to run all waiting tasks.
 
 ```ruby
 execution.run_automated_tasks
 ```
 
-Now, both paths are joined into one and we `wait` at the script task. Notice, the results of previous tasks are merged into the process variables.
+Now, both paths are joined into one and we _wait_ at the script task. Notice, the results of previous tasks are merged into the process variables.
 
 ```ruby
 HelloWorld started * Flow_0ws7a4m
