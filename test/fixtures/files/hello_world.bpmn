@@ -6,19 +6,14 @@
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_080794y" sourceRef="Start" targetRef="IntroduceYourself" />
     <bpmn:sequenceFlow id="Flow_0t9jhga" sourceRef="IntroduceYourself" targetRef="Split" />
-    <bpmn:sequenceFlow id="Flow_0gi9kt6" sourceRef="Split" targetRef="ChooseGreeting">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=true</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_0gi9kt6" sourceRef="Split" targetRef="ChooseGreeting" />
     <bpmn:sequenceFlow id="Flow_1652shv" sourceRef="ChooseGreeting" targetRef="Join" />
     <bpmn:sequenceFlow id="Flow_0ws7a4m" sourceRef="Join" targetRef="GenerateMessage" />
     <bpmn:sequenceFlow id="Flow_0gkfhvr" sourceRef="GenerateMessage" targetRef="End" />
-    <bpmn:sequenceFlow id="Flow_0941shg" sourceRef="Split" targetRef="ChooseFortune">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=cookie = true</bpmn:conditionExpression>
-    </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_1iuc1xe" sourceRef="ChooseFortune" targetRef="Join" />
     <bpmn:scriptTask id="GenerateMessage" name="Generate Message">
       <bpmn:extensionElements>
-        <zeebe:script expression="=if cookie then&#10;  &#34;👋 &#34; + greeting + &#34; &#34; + name + &#34; 🥠 &#34; + fortune&#10;else&#10;  &#34;👋 &#34; + greeting + &#34; &#34; + name" resultVariable="message" />
+        <zeebe:script expression="=&#34;👋 &#34; + choose_greeting.greeting + &#34; &#34; + name + &#34; 🥠 &#34; + choose_fortune" resultVariable="message" />
         <zeebe:properties>
           <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;message&#34;: &#34;👋 Ciao Eric, 🥠 The fortune you seek is in another cookie.&#34;&#10;}" />
         </zeebe:properties>
@@ -28,7 +23,7 @@
     </bpmn:scriptTask>
     <bpmn:businessRuleTask id="ChooseGreeting" name="Choose Greeting">
       <bpmn:extensionElements>
-        <zeebe:calledDecision decisionId="ChooseGreeting" resultVariable="greeting" />
+        <zeebe:calledDecision decisionId="ChooseGreeting" resultVariable="choose_greeting" />
         <zeebe:properties>
           <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;greeting&#34;: &#34;Caio&#34;&#10;}" />
         </zeebe:properties>
@@ -38,12 +33,12 @@
     </bpmn:businessRuleTask>
     <bpmn:serviceTask id="ChooseFortune" name="Choose Fortune">
       <bpmn:extensionElements>
-        <zeebe:taskDefinition type="GenerateFortuneJob" retries="3" />
+        <zeebe:taskDefinition type="ChooseFortuneService" retries="3" />
         <zeebe:properties>
           <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;fortune&#34;: &#34;The fortune you seek is in another cookie.&#34; &#10;}" />
         </zeebe:properties>
       </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0941shg</bpmn:incoming>
+      <bpmn:incoming>Flow_0pb7kh6</bpmn:incoming>
       <bpmn:outgoing>Flow_1iuc1xe</bpmn:outgoing>
     </bpmn:serviceTask>
     <bpmn:userTask id="IntroduceYourself" name="Introduce Yourself">
@@ -67,16 +62,29 @@
       <bpmn:incoming>Flow_0gkfhvr</bpmn:incoming>
       <bpmn:incoming>Flow_1agmyn8</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:inclusiveGateway id="Split" name="Split">
+    <bpmn:sequenceFlow id="Flow_0q1vtg3" sourceRef="Split" targetRef="WantsCookie" />
+    <bpmn:parallelGateway id="Split" name="Split">
       <bpmn:incoming>Flow_0t9jhga</bpmn:incoming>
       <bpmn:outgoing>Flow_0gi9kt6</bpmn:outgoing>
-      <bpmn:outgoing>Flow_0941shg</bpmn:outgoing>
-    </bpmn:inclusiveGateway>
-    <bpmn:inclusiveGateway id="Join" name="Join">
+      <bpmn:outgoing>Flow_0q1vtg3</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:parallelGateway id="Join" name="Join">
       <bpmn:incoming>Flow_1652shv</bpmn:incoming>
       <bpmn:incoming>Flow_1iuc1xe</bpmn:incoming>
+      <bpmn:incoming>Flow_066or8a</bpmn:incoming>
       <bpmn:outgoing>Flow_0ws7a4m</bpmn:outgoing>
-    </bpmn:inclusiveGateway>
+    </bpmn:parallelGateway>
+    <bpmn:exclusiveGateway id="WantsCookie" name="cookie?">
+      <bpmn:incoming>Flow_0q1vtg3</bpmn:incoming>
+      <bpmn:outgoing>Flow_0pb7kh6</bpmn:outgoing>
+      <bpmn:outgoing>Flow_066or8a</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0pb7kh6" name="yes" sourceRef="WantsCookie" targetRef="ChooseFortune">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=cookie = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_066or8a" name="no" sourceRef="WantsCookie" targetRef="Join">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=cookie = false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="HelloWorld">
@@ -90,14 +98,6 @@
         <dc:Bounds x="790" y="137" width="100" height="80" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1spgr8r_di" bpmnElement="ChooseGreeting">
-        <dc:Bounds x="530" y="137" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1nkt8bu_di" bpmnElement="ChooseFortune">
-        <dc:Bounds x="530" y="250" width="100" height="80" />
-        <bpmndi:BPMNLabel />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0jwynt5_di" bpmnElement="IntroduceYourself">
         <dc:Bounds x="270" y="137" width="100" height="80" />
         <bpmndi:BPMNLabel />
@@ -108,16 +108,30 @@
           <dc:Bounds x="960" y="135" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1lbrrn0_di" bpmnElement="Split">
+      <bpmndi:BPMNShape id="Activity_1spgr8r_di" bpmnElement="ChooseGreeting">
+        <dc:Bounds x="530" y="40" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_11m3e1z_di" bpmnElement="Split">
         <dc:Bounds x="425" y="152" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="439" y="122" width="22" height="14" />
+          <dc:Bounds x="479" y="143" width="22" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Gateway_1hr23wy_di" bpmnElement="Join">
+      <bpmndi:BPMNShape id="Gateway_0xk3x63_di" bpmnElement="Join">
         <dc:Bounds x="685" y="152" width="50" height="50" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="700" y="122" width="21" height="14" />
+          <dc:Bounds x="659" y="143" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1nkt8bu_di" bpmnElement="ChooseFortune">
+        <dc:Bounds x="660" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1cphbnd_di" bpmnElement="WantsCookie" isMarkerVisible="true">
+        <dc:Bounds x="555" y="255" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="561" y="312" width="38" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1mct1pe_di" bpmnElement="EggTimer">
@@ -135,12 +149,14 @@
         <di:waypoint x="425" y="177" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0gi9kt6_di" bpmnElement="Flow_0gi9kt6">
-        <di:waypoint x="475" y="177" />
-        <di:waypoint x="530" y="177" />
+        <di:waypoint x="450" y="152" />
+        <di:waypoint x="450" y="80" />
+        <di:waypoint x="530" y="80" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1652shv_di" bpmnElement="Flow_1652shv">
-        <di:waypoint x="630" y="177" />
-        <di:waypoint x="685" y="177" />
+        <di:waypoint x="630" y="80" />
+        <di:waypoint x="710" y="80" />
+        <di:waypoint x="710" y="152" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0ws7a4m_di" bpmnElement="Flow_0ws7a4m">
         <di:waypoint x="735" y="177" />
@@ -150,21 +166,35 @@
         <di:waypoint x="890" y="177" />
         <di:waypoint x="952" y="177" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0941shg_di" bpmnElement="Flow_0941shg">
-        <di:waypoint x="450" y="202" />
-        <di:waypoint x="450" y="290" />
-        <di:waypoint x="530" y="290" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1iuc1xe_di" bpmnElement="Flow_1iuc1xe">
-        <di:waypoint x="630" y="290" />
-        <di:waypoint x="710" y="290" />
+        <di:waypoint x="710" y="240" />
         <di:waypoint x="710" y="202" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1agmyn8_di" bpmnElement="Flow_1agmyn8">
         <di:waypoint x="320" y="235" />
-        <di:waypoint x="320" y="370" />
-        <di:waypoint x="970" y="370" />
+        <di:waypoint x="320" y="360" />
+        <di:waypoint x="970" y="360" />
         <di:waypoint x="970" y="195" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0q1vtg3_di" bpmnElement="Flow_0q1vtg3">
+        <di:waypoint x="450" y="202" />
+        <di:waypoint x="450" y="280" />
+        <di:waypoint x="555" y="280" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0pb7kh6_di" bpmnElement="Flow_0pb7kh6">
+        <di:waypoint x="605" y="280" />
+        <di:waypoint x="660" y="280" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="624" y="262" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_066or8a_di" bpmnElement="Flow_066or8a">
+        <di:waypoint x="580" y="255" />
+        <di:waypoint x="580" y="177" />
+        <di:waypoint x="685" y="177" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="589" y="213" width="13" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

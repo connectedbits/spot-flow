@@ -97,7 +97,10 @@ module SpotFlow
       end
 
       describe :execution do
-        before { @execution = context.start(variables: { name: "Eric" }) }
+        before do
+          @execution = context.start(variables: { name: "Eric" })
+          script_task.run
+        end
 
         let(:execution) { @execution }
         let(:script_task) { execution.child_by_step_id("ScriptTask") }
@@ -126,7 +129,10 @@ module SpotFlow
       end
 
       describe :execution do
-        before { @execution = context.start(variables: { season: "Spring", guests: 7 }) }
+        before do
+          @execution = context.start(variables: { season: "Spring", guests: 7 })
+          business_rule_task.run
+        end
 
         let(:execution) { @execution }
         let(:business_rule_task) { execution.child_by_step_id("BusinessRuleTask") }

@@ -52,11 +52,18 @@ module SpotFlow
       end
 
       def execute(execution)
-        execution.run
+        execution.wait
       end
 
       def task_type
         extension_elements&.task_definition&.type
+      end
+
+      def run(execution)
+        if defined?(task_type)
+          klass = task_type.constantize
+          klass.new.call(execution.parent.variables)
+        end
       end
     end
 
@@ -69,6 +76,10 @@ module SpotFlow
       def result_variable
         extension_elements&.script&.result_variable
       end
+
+      def run(execution)
+        SpotFeel.evaluate(script.delete_prefix("="), variables: execution.parent.variables)
+      end
     end
 
     class BusinessRuleTask < ServiceTask
@@ -79,6 +90,10 @@ module SpotFlow
 
       def result_variable
         extension_elements&.called_decision&.result_variable
+      end
+
+      def run(execution)
+        SpotFeel.decide(decision_id, definitions: execution.context.dmn_definitions_by_decision_id(decision_id), variables: execution.parent.variables)
       end
     end
   end

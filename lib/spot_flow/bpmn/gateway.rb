@@ -66,7 +66,8 @@ module SpotFlow
     end
 
     class InclusiveGateway < Gateway
-      # RULE: All valid flows are take
+      # RULE: All valid flows are taken
+      # NOTE: Camunda 8 only support diverging but not converging inclusive gateways
     end
 
     class EventBasedGateway < Gateway

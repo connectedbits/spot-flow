@@ -11,7 +11,11 @@ The engine executes business processes like [this one](/test/fixtures/files/hell
 To start the process, initialize Spot Flow with the BPMN and DMN source files, then call `start`.
 
 ```ruby
-execution = SpotFlow.new([File.read("hello_world.bpmn"), File.read("choose_greeting.dmn")]).start
+sources = [
+  File.read("hello_world.bpmn"),
+  File.read("choose_greeting.dmn")
+]
+execution = SpotFlow.new(sources).start
 ```
 
 It's often useful to print the process state to the console.
@@ -21,13 +25,14 @@ execution.print
 ```
 
 ```ruby
-HelloWorld started * Flow_0zlro9p
+HelloWorld started * Flow_080794y
 
-0 StartEvent Start: completed * out: Flow_0zlro9p
-1 ServiceTask SayHello: waiting * in: Flow_0zlro9p
+0 StartEvent Start: completed * out: Flow_080794y
+1 UserTask IntroduceYourself: waiting * in: Flow_080794y
+2 BoundaryEvent EggTimer: waiting
 ```
 
-The 'HelloWorld' process began at the 'Start' event and is `waiting` at the 'SayHello' task. This is an important concept in the SpotFlow engine. It's designed to be used in a Rails application where a process might be waiting for a user to complete a form, or a background job to complete. It's common to save the state the process until a task is complete. Calling `serialize` on a process will return the execution state so it can be continued later.
+The 'HelloWorld' process began at the 'Start' event and is `waiting` at the 'IntroduceYourself' user task. This is an important concept in the SpotFlow engine. It's designed to be used in a Rails application where a process might be waiting for a user to complete a form, or a background job to complete. It's common to save the state the process until a task is complete. Calling `serialize` on a process will return the execution state so it can be continued later.
 
 ```ruby
 # Returns a hash of the process state.
@@ -37,28 +42,102 @@ execution_state = execution.serialize
 # or a background job completes (ServiceTask)
 
 # Restores the process from the execution state.
-execution = SpotFlow.restore(File.read("hello_world.bpmn"), execution_state:)
+execution = SpotFlow.restore(sources, execution_state:)
 
 # Now we can continue the process by `signaling` the waiting task.
-step = execution.step_by_element_id("SayHello")
-step.signal(message: "Hello World!")
+step = execution.step_by_element_id("IntroduceYourself")
+step.signal(name: "Eric", language: "it", formal: false, cookie: true)
 ```
 
-Now the 'SayHello' task is completed, it's result is merged into the process variables, and the process continues to the 'End' event.
+Now the 'IntroduceYourself' task is completed, it's result is merged into the process variables, and execution continues.
+
+```ruby
+HelloWorld started * Flow_0gi9kt6, Flow_0pb7kh6
+
+{
+  "name": "Eric",
+  "language": "it",
+  "formal": false,
+  "cookie": true
+}
+
+0 StartEvent Start: completed * out: Flow_080794y
+1 UserTask IntroduceYourself: completed { "name": "Eric", "language": "it", "formal": false, "cookie": true } * in: Flow_080794y * out: Flow_0t9jhga
+2 BoundaryEvent EggTimer: terminated
+3 ParallelGateway Split: completed * in: Flow_0t9jhga * out: Flow_0gi9kt6, Flow_0q1vtg3
+4 BusinessRuleTask ChooseGreeting: waiting * in: Flow_0gi9kt6
+5 ExclusiveGateway WantsCookie: completed * in: Flow_0q1vtg3 * out: Flow_0pb7kh6
+6 ServiceTask ChooseFortune: waiting * in: Flow_0pb7kh6
+```
+
+When execution reached the `Split` gateway, it split into two paths. The first path is waiting at the `ChooseGreeting` business rule task. The second path evaluated the sequence flows after the WantsCookie execlusive gateway and is waiting at the `ChooseFortune` service task. Automated tasks (service, business rule, or script tasks) can be `run` by the engine. All automated tasks can be run by calling `run_automated_tasks`.
+
+```ruby
+execution.run_automated_tasks
+```
+
+Now, both paths are joined into one and we wait at the script task. Notice, the results of previous tasks are merged into the process variables.
+
+```ruby
+HelloWorld started * Flow_0ws7a4m
+
+{
+  "name": "Eric",
+  "language": "it",
+  "formal": false,
+  "cookie": true,
+  "choose_greeting": {
+    "greeting": "Ciao"
+  },
+  "choose_fortune": "A foolish man listens to his heart. A wise man listens to cookies."
+}
+
+0 StartEvent Start: completed * out: Flow_080794y
+1 UserTask IntroduceYourself: completed { "name": "Eric", "language": "it", "formal": false, "cookie": true } * in: Flow_080794y * out: Flow_0t9jhga
+2 BoundaryEvent EggTimer: terminated
+3 ParallelGateway Split: completed * in: Flow_0t9jhga * out: Flow_0gi9kt6, Flow_0q1vtg3
+4 BusinessRuleTask ChooseGreeting: completed { "choose_greeting": { "greeting": "Ciao" } } * in: Flow_0gi9kt6 * out: Flow_1652shv
+5 ExclusiveGateway WantsCookie: completed * in: Flow_0q1vtg3 * out: Flow_0pb7kh6
+6 ServiceTask ChooseFortune: completed { "choose_fortune": "A foolish man listens to his heart. A wise man listens to cookies." } * in: Flow_0pb7kh6 * out: Flow_1iuc1xe
+7 ParallelGateway Join: completed * in: Flow_1652shv, Flow_1iuc1xe * out: Flow_0ws7a4m
+8 ScriptTask GenerateMessage: waiting * in: Flow_0ws7a4m
+```
+
+This time we'll run the script task manually.
+
+```ruby
+step = execution.step_by_element_id("GenerateMessage")
+step.run
+```
+
+Now the process is complete.
 
 ```ruby
 HelloWorld completed *
 
 {
-  "message": "Hello World!"
+  "name": "Eric",
+  "language": "it",
+  "formal": false,
+  "cookie": true,
+  "choose_greeting": {
+    "greeting": "Ciao"
+  },
+  "choose_fortune": "A foolish man listens to his heart. A wise man listens to cookies.",
+  "message": "👋 Ciao Eric 🥠 A foolish man listens to his heart. A wise man listens to cookies."
 }
 
-0 StartEvent Start: completed * out: Flow_0zlro9p
-1 ServiceTask SayHello: completed { "message": "Hello World!" } * in: Flow_0zlro9p * out: Flow_1doumjv
-2 EndEvent End: completed * in: Flow_1doumjv
+0 StartEvent Start: completed * out: Flow_080794y
+1 UserTask IntroduceYourself: completed { "name": "Eric", "language": "it", "formal": false, "cookie": true } * in: Flow_080794y * out: Flow_0t9jhga
+2 BoundaryEvent EggTimer: terminated
+3 ParallelGateway Split: completed * in: Flow_0t9jhga * out: Flow_0gi9kt6, Flow_0q1vtg3
+4 BusinessRuleTask ChooseGreeting: completed { "choose_greeting": { "greeting": "Ciao" } } * in: Flow_0gi9kt6 * out: Flow_1652shv
+5 ExclusiveGateway WantsCookie: completed * in: Flow_0q1vtg3 * out: Flow_0pb7kh6
+6 ServiceTask ChooseFortune: completed { "choose_fortune": "A foolish man listens to his heart. A wise man listens to cookies." } * in: Flow_0pb7kh6 * out: Flow_1iuc1xe
+7 ParallelGateway Join: completed * in: Flow_1652shv, Flow_1iuc1xe * out: Flow_0ws7a4m
+8 ScriptTask GenerateMessage: completed { "message": "👋 A foolish man listens to his heart. A wise man listens to cookies." } * in: Flow_0ws7a4m * out: Flow_0gkfhvr
+9 EndEvent End: completed * in: Flow_0gkfhvr
 ```
-
-TODO: Expand usage to include expanded hello world example.
 
 ## Documentation
 

@@ -192,11 +192,7 @@ module SpotFlow
     def run
       return unless step.is_automated?
 
-      if step.class == Bpmn::ScriptTask && step.script.present?
-        result = evaluate_expression(step.script, variables: parent.variables)
-      elsif step.class == Bpmn::BusinessRuleTask && step.decision_id.present?
-        result = SpotFeel.decide(step.decision_id, definitions: context.dmn_definitions_by_decision_id(step.decision_id), variables: parent.variables)
-      end
+      result = step.run(self)
 
       if result.present?
         signal(result)

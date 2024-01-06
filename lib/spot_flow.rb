@@ -12,6 +12,7 @@ require "active_model"
 require "spot_feel"
 
 require "spot_flow/bpmn"
+require "spot_flow/service"
 require "spot_flow/context"
 require "spot_flow/execution"
 
