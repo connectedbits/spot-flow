@@ -25,7 +25,7 @@
       <bpmn:extensionElements>
         <zeebe:calledDecision decisionId="ChooseGreeting" resultVariable="choose_greeting" />
         <zeebe:properties>
-          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;greeting&#34;: &#34;Caio&#34;&#10;}" />
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;choose_greeting&#34;: {&#10;    &#34;greeting&#34;: &#34;Caio&#34;&#10;  }&#10;}" />
         </zeebe:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0gi9kt6</bpmn:incoming>
@@ -35,7 +35,7 @@
       <bpmn:extensionElements>
         <zeebe:taskDefinition type="ChooseFortuneService" retries="3" />
         <zeebe:properties>
-          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;fortune&#34;: &#34;The fortune you seek is in another cookie.&#34; &#10;}" />
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;choose_fortune&#34;: &#34;The fortune you seek is in another cookie.&#34; &#10;}" />
         </zeebe:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0pb7kh6</bpmn:incoming>
