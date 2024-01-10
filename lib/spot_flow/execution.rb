@@ -31,7 +31,11 @@ module SpotFlow
     end
 
     def self.deserialize(json, context:)
-      attributes = JSON.parse(json)
+      if json.is_a?(String)
+        attributes = JSON.parse(json)
+      else
+        attributes = json
+      end
       Execution.from_json(attributes, context: context)
     end
 
