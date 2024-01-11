@@ -50,6 +50,14 @@ module SpotFlow
       def candidate_users
         extension_elements&.assignment_definition&.candidate_users
       end
+
+      def due_date
+        extension_elements&.task_schedule&.due_date
+      end
+
+      def follow_up_date
+        extension_elements&.task_schedule&.follow_up_date
+      end
     end
 
     class ServiceTask < Task
