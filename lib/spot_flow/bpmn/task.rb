@@ -38,6 +38,18 @@ module SpotFlow
       def form_key
         extension_elements&.form_definition&.form_key
       end
+
+      def assignee
+        extension_elements&.assignment_definition&.assignee
+      end
+
+      def candidate_groups
+        extension_elements&.assignment_definition&.candidate_groups
+      end
+
+      def candidate_users
+        extension_elements&.assignment_definition&.candidate_users
+      end
     end
 
     class ServiceTask < Task
@@ -57,6 +69,10 @@ module SpotFlow
 
       def task_type
         extension_elements&.task_definition&.type
+      end
+
+      def task_retries
+        extension_elements&.task_definition&.retries
       end
 
       def headers
