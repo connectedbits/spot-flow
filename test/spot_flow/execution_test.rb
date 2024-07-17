@@ -62,25 +62,25 @@ module SpotFlow
         end
       end
 
-      # describe :execute_sub_process do
-      #   before { task.signal }
+      describe :execute_sub_process do
+        before { task.signal }
 
-      #   it "should start the sub process" do
-      #     _(sub_process.started?).must_equal true
-      #     _(sub_task.waiting?).must_equal true
-      #     _(catch_event.terminated?).must_equal true
-      #   end
+        it "should start the sub process" do
+          _(sub_process.started?).must_equal true
+          _(sub_task.waiting?).must_equal true
+          _(catch_event.terminated?).must_equal true
+        end
 
-      #   describe :signal_sub do
-      #     before { sub_task.signal }
+        describe :signal_sub do
+          before { sub_task.signal }
 
-      #     it "should end the process" do
-      #       _(execution.ended?).must_equal true
-      #       _(sub_process.ended?).must_equal true
-      #       _(end_event).wont_be_nil
-      #     end
-      #   end
-      # end
+          it "should end the process" do
+            _(execution.ended?).must_equal true
+            _(sub_process.ended?).must_equal true
+            _(end_event).wont_be_nil
+          end
+        end
+      end
     end
 
     describe :serialization do
