@@ -29,7 +29,7 @@ module SpotFlow
         @service_tasks = Array.wrap(attributes[:service_task]).map { |st| ServiceTask.new(st) }
         @script_tasks = Array.wrap(attributes[:script_task]).map { |st| ScriptTask.new(st) }
         @business_rule_tasks = Array.wrap(attributes[:business_rule_task]).map { |brt| BusinessRuleTask.new(brt) }
-        @call_activities = Array.wrap(attributes[:call_activitie]).map { |ca| CallActivity.new(ca) }
+        @call_activities = Array.wrap(attributes[:call_activity]).map { |ca| CallActivity.new(ca) }
         @sub_processes = Array.wrap(attributes[:sub_process]).map { |sp| SubProcess.new(sp) }
         @ad_hoc_sub_processes = Array.wrap(attributes[:ad_hoc_sub_processe]).map { |ahsp| AdHocSubProcess.new(ahsp) }
         @exclusive_gateways = Array.wrap(attributes[:exclusive_gateway]).map { |eg| ExclusiveGateway.new(eg) }
@@ -128,8 +128,8 @@ module SpotFlow
         parts << "@parent=#{parent.inspect}" if parent
         event_attrs = (start_events + intermediate_catch_events + intermediate_throw_events + boundary_events + end_events).compact
         parts << "@events=#{event_attrs.inspect}" unless event_attrs.blank?
-        task_attrs = (tasks + user_tasks + service_tasks + script_tasks + business_rule_tasks).compact
-        parts << "@tasks=#{task_attrs.inspect}" unless task_attrs.blank?
+        activity_attrs = (tasks + user_tasks + service_tasks + script_tasks + business_rule_tasks + call_activities).compact
+        parts << "@activities=#{activity_attrs.inspect}" unless activity_attrs.blank?
         gateway_attrs = (exclusive_gateways + parallel_gateways + inclusive_gateways + event_based_gateways).compact
         parts << "@gateways=#{gateway_attrs.inspect}" unless gateway_attrs.blank?
         sub_process_attrs = (sub_processes + ad_hoc_sub_processes).compact
@@ -160,21 +160,13 @@ module SpotFlow
     end
 
     class CallActivity < Activity
-      attr_accessor :called_element, :process_ref
-
-      def initialize(attributes = {})
-        super(attributes.except(:called_element, :process_ref))
-
-        @called_element = attributes[:called_element]
-        @process_ref = attributes[:process_ref]
-      end
-
       def execute(execution)
-        if SpotFeel::Dmn::LiteralExpression.valid?(called_element)
-          process_id = SpotFeel::Dmn::LiteralExpression.new(expression).evaluate(execution.variables)
+        if extension_elements&.called_element&.process_id&.start_with?("=")
+          process_id = SpotFeel.evaluate(extension_elements.called_element.process_id, variables: execution.variables)
         else
-          process_id = called_element
+          process_id = extension_elements.called_element.process_id
         end
+
         execution.call(process_id)
       end
     end

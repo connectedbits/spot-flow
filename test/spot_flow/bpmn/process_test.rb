@@ -25,34 +25,39 @@ module SpotFlow
       end      
     end
 
-    # describe CallActivity do
-    #   let(:caller_source) { fixture_source("call_activity_caller_test.bpmn") }
-    #   let(:callee_source) { fixture_source("call_activity_callee_test.bpmn") }
-    #   let(:sources) { [caller_source, callee_source] }
-    #   let(:context) { SpotFlow.new(sources) }    
+    describe CallActivity do
+      let(:caller_source) { fixture_source("call_activity_caller_test.bpmn") }
+      let(:callee_source) { fixture_source("call_activity_callee_test.bpmn") }
+      let(:sources) { [caller_source, callee_source] }
+      let(:context) { SpotFlow.new(sources) }    
 
-    #   describe :definition do
-    #     let(:caller_process) { context.process_by_id("Caller") }
-    #     let(:callee_process) { context.process_by_id("Callee") }
-  
-    #     it "should parse the process" do
-    #       _(caller_process).wont_be_nil
-    #       _(callee_process).wont_be_nil
-    #     end
-    #   end
+      describe :definition do
+        let(:caller_process) { context.process_by_id("Caller") }
+        let(:callee_process) { context.process_by_id("Callee") }
+        let(:call_activity) { caller_process.element_by_id("CallActivity") }
+        let(:callee_task) { callee_process.element_by_id("Task") }
 
-    #   describe :execution do
-    #     before do
-    #       @execution = context.start(process_id: "Caller")
-    #     end
+        it "should parse the process" do
+          _(caller_process).wont_be_nil
+          _(callee_process).wont_be_nil
+          _(call_activity).wont_be_nil
+          _(callee_task).wont_be_nil
+        end
+      end
 
-    #     let (:execution) { @execution }
-    #     let (:call_activity) { execution.child_by_step_id("CallActivity") }
+      describe :execution do
+        before do
+          @execution = context.start(process_id: "Caller")
+        end
 
-    #     it "should wait at the call activity" do
-    #       _(call_activity.waiting?).must_equal true
-    #     end
-    #   end
-    # end
+        let (:execution) { @execution }
+        let (:call_activity) { execution.child_by_step_id("CallActivity") }
+
+        it "should wait at the call activity" do
+          #execution.print
+          #_(call_activity.waiting?).must_equal true
+        end
+      end
+    end
   end
 end

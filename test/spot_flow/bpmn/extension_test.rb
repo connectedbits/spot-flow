@@ -15,6 +15,7 @@ module SpotFlow
         let(:business_rule_task) { process.element_by_id("BusinessRuleTask") }
         let(:service_task) { process.element_by_id("ServiceTask") }
         let(:script_task) { process.element_by_id("ScriptTask") }
+        let(:call_activity) { process.element_by_id("CallActivity") }
         let(:end_event) { process.element_by_id("End") }
 
         describe :assignment_definition do
@@ -24,6 +25,15 @@ module SpotFlow
             _(assignment_definition.assignee).must_equal "bill@somewhere.com"
             _(assignment_definition.candidate_groups).must_equal "maintenance"
             _(assignment_definition.candidate_users).must_equal "bill@somewhere.com jill@somewhere.com"
+          end
+        end
+
+        describe :called_element do
+          let(:called_element) { call_activity.extension_elements.called_element }
+
+          it "should parse the called element" do
+            _(called_element.process_id).must_equal "CallActivityCalleeTest"
+            _(called_element.propagate_all_child_variables).must_equal false
           end
         end
 

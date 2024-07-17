@@ -5,7 +5,7 @@ module SpotFlow
     class ExtensionElements
       VALID_EXTENSION_NAMESPACES = %w[zeebe]
 
-      attr_accessor :assignment_definition, :called_decision, :form_definition, :io_mapping, :properties, :script, :subscription, :task_definition, :task_headers, :task_schedule
+      attr_accessor :assignment_definition, :called_element, :called_decision, :form_definition, :io_mapping, :properties, :script, :subscription, :task_definition, :task_headers, :task_schedule
 
       def initialize(attributes = {})
         if attributes[:properties].present?
@@ -14,6 +14,7 @@ module SpotFlow
         end
 
         @assignment_definition = Zeebe::AssignmentDefinition.new(attributes[:assignment_definition]) if attributes[:assignment_definition].present?
+        @called_element = Zeebe::CalledElement.new(attributes[:called_element]) if attributes[:called_element].present?
         @called_decision = Zeebe::CalledDecision.new(attributes[:called_decision]) if attributes[:called_decision].present?
         @form_definition = Zeebe::FormDefinition.new(attributes[:form_definition]) if attributes[:form_definition].present?
         @io_mapping = Zeebe::IoMapping.new(attributes[:io_mapping]) if attributes[:io_mapping].present?

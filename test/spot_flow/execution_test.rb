@@ -91,7 +91,6 @@ module SpotFlow
       before { @execution = context.start(variables: {"foo": "bar"}) }
 
       let(:execution) { @execution }
-      let(:execution) { @execution }
       let(:start_event) { execution.child_by_step_id("Start") }
       let(:task) { execution.child_by_step_id("Task") }
       let(:catch_event) { execution.child_by_step_id("Catch") }

@@ -14,6 +14,12 @@ module SpotFlow
 
     class CalledElement < Bpmn::Extension
       attr_accessor :process_id, :propagate_all_child_variables
+
+      def initialize(attributes = {})
+        super(attributes.except(:propagate_all_child_variables))
+
+        @propagate_all_child_variables = attributes[:propagate_all_child_variables] == "true"
+      end
     end
 
     class CalledDecision < Bpmn::Extension
