@@ -12,6 +12,10 @@ module SpotFlow
       attr_accessor :assignee, :candidate_groups, :candidate_users
     end
 
+    class CalledElement < Bpmn::Extension
+      attr_accessor :process_id, :propagate_all_child_variables
+    end
+
     class CalledDecision < Bpmn::Extension
       attr_accessor :decision_id, :result_variable
     end
