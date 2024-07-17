@@ -14,22 +14,6 @@ module SpotFlow
       end
     end
 
-    def self.start_with_message(context:, message_name:, variables: {})
-      [].tap do |executions|
-        context.processes.map do |process|
-          process.start_events.map do |start_event|
-            start_event.message_event_definitions.map do |message_event_definition|
-              if message_name == message_event_definition.message_name
-                Execution.start(context:, process:, variables:, start_event_id: start_event.id).tap do |execution|
-                  executions.push execution
-                end
-              end
-            end
-          end
-        end
-      end
-    end
-
     def self.deserialize(json, context:)
       if json.is_a?(String)
         attributes = JSON.parse(json)
@@ -44,8 +28,10 @@ module SpotFlow
       step_type = attributes.delete("step_type")
       step = step_type == "Process" ? context.process_by_id(step_id) : context.element_by_id(step_id)
       child_attributes = attributes.delete("children")
-      Execution.new(attributes.merge(step: step)).tap do |execution|
-        execution.children = child_attributes.map { |ca| Execution.from_json(ca, context: context) } if child_attributes
+      Execution.new(attributes.merge(step: step, context:)).tap do |execution|
+        execution.children = child_attributes.map do |ca| 
+          Execution.from_json(ca, context:).tap { |child| child.parent = execution }
+        end if child_attributes
       end
     end
 
@@ -55,14 +41,13 @@ module SpotFlow
       end
       @id ||= SecureRandom.uuid
       @status ||= "activated"
-      @variables ||= {}.with_indifferent_access
+      @variables = @variables&.with_indifferent_access || {}.with_indifferent_access
       @tokens_in ||= []
       @tokens_out ||= []
       @message_names ||= []
       @error_names ||= []
       @children ||= []
     end
-
 
     def started?
       started_at.present?
@@ -185,7 +170,7 @@ module SpotFlow
       evaluate_expression(condition.delete_prefix("=")) == true
     end
 
-    def evaluate_expression(expression, variables: parent.variables)
+    def evaluate_expression(expression, variables: parent&.variables || {}.with_indifferent_access)
       SpotFeel.evaluate(expression.delete_prefix("="), variables:)
     end
 
@@ -259,7 +244,7 @@ module SpotFlow
         status: status,
         started_at: started_at,
         ended_at: ended_at,
-        variables: variables,
+        variables: variables.as_json,
         tokens_in: tokens_in,
         tokens_out: tokens_out,
         message_names: message_names,

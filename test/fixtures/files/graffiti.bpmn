@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_graffiti" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.25.0">
+  <bpmn:process id="graffiti" name="Graffiti" isExecutable="true">
+    <bpmn:startEvent id="graffiti_opened" name="Opened/WorkflowAdded">
+      <bpmn:outgoing>Flow_29120</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_graffiti_opened_opened" messageRef="Message_opened" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_graffiti_opened_workflow_added" messageRef="Message_workflow_added" />
+    </bpmn:startEvent>
+    <bpmn:parallelGateway id="parallel_gateway" name="">
+      <bpmn:incoming>Flow_29120</bpmn:incoming>
+      <bpmn:outgoing>Flow_29140</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29160</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:intermediateCatchEvent id="graffiti_closed" name="Closed/WorkflowRemoved">
+      <bpmn:incoming>Flow_29140</bpmn:incoming>
+      <bpmn:outgoing>Flow_29180</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29180</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_graffiti_closed_closed" messageRef="Message_closed" />
+      <bpmn:messageEventDefinition id="MessageEventDefinition_graffiti_closed_workflow_removed" messageRef="Message_workflow_removed" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:userTask id="graffiti_inspect" name="Inspect Graffiti">
+      <bpmn:incoming>Flow_29200</bpmn:incoming>
+      <bpmn:incoming>Flow_29200</bpmn:incoming>
+      <bpmn:incoming>Flow_29160</bpmn:incoming>
+      <bpmn:outgoing>Flow_29220</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29220</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29240</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29240</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="graffiti_remove" name="Remove Graffiti">
+      <bpmn:incoming>Flow_29240</bpmn:incoming>
+      <bpmn:incoming>Flow_29240</bpmn:incoming>
+      <bpmn:outgoing>Flow_29260</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29260</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29200</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29200</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:serviceTask id="graffiti_close_ticket" name="Close Ticket">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="close_ticket" retries="3" />
+        <zeebe:properties>
+          <zeebe:property name="action" value="close_ticket" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_29220</bpmn:incoming>
+      <bpmn:incoming>Flow_29220</bpmn:incoming>
+      <bpmn:incoming>Flow_29260</bpmn:incoming>
+      <bpmn:incoming>Flow_29260</bpmn:incoming>
+      <bpmn:outgoing>Flow_29280</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29280</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29300</bpmn:outgoing>
+      <bpmn:outgoing>Flow_29300</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="graffiti_end" name="End">
+      <bpmn:incoming>Flow_29280</bpmn:incoming>
+      <bpmn:incoming>Flow_29280</bpmn:incoming>
+      <bpmn:incoming>Flow_29180</bpmn:incoming>
+      <bpmn:incoming>Flow_29180</bpmn:incoming>
+      <bpmn:incoming>Flow_29300</bpmn:incoming>
+      <bpmn:incoming>Flow_29300</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_graffiti_end" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_29280" sourceRef="graffiti_close_ticket" targetRef="graffiti_end" />
+    <bpmn:sequenceFlow id="Flow_29180" sourceRef="graffiti_closed" targetRef="graffiti_end" />
+    <bpmn:sequenceFlow id="Flow_29220" sourceRef="graffiti_inspect" targetRef="graffiti_close_ticket">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">"not_found = data.graffiti_inspect_outcome"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_29240" sourceRef="graffiti_inspect" targetRef="graffiti_remove">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">"ready = data.graffiti_inspect_outcome"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_29260" sourceRef="graffiti_remove" targetRef="graffiti_close_ticket">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">"removed = data.graffiti_remove_outcome"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_29200" sourceRef="graffiti_remove" targetRef="graffiti_inspect">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">"help_wanted = data.graffiti_remove_outcome"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_29300" sourceRef="graffiti_close_ticket" targetRef="graffiti_end" />
+    <bpmn:sequenceFlow id="Flow_29140" sourceRef="parallel_gateway" targetRef="graffiti_closed" />
+    <bpmn:sequenceFlow id="Flow_29120" sourceRef="graffiti_opened" targetRef="parallel_gateway" />
+    <bpmn:sequenceFlow id="Flow_29160" sourceRef="parallel_gateway" targetRef="graffiti_inspect" />
+  </bpmn:process>
+  <bpmn:message id="Message_opened" name="Opened" />
+  <bpmn:message id="Message_workflow_added" name="WorkflowAdded" />
+  <bpmn:message id="Message_closed" name="Closed" />
+  <bpmn:message id="Message_workflow_removed" name="WorkflowRemoved" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="graffiti">
+      <bpmndi:BPMNShape id="Shape_graffiti_opened_di" bpmnElement="graffiti_opened">
+        <dc:Bounds x="179" y="149" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_parallel_gateway_di" bpmnElement="parallel_gateway">
+        <dc:Bounds x="265" y="142" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_graffiti_closed_di" bpmnElement="graffiti_closed">
+        <dc:Bounds x="272" y="282" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_graffiti_inspect_di" bpmnElement="graffiti_inspect">
+        <dc:Bounds x="370" y="127" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_graffiti_remove_di" bpmnElement="graffiti_remove">
+        <dc:Bounds x="530" y="127" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_graffiti_close_ticket_di" bpmnElement="graffiti_close_ticket">
+        <dc:Bounds x="690" y="127" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_graffiti_end_di" bpmnElement="graffiti_end">
+        <dc:Bounds x="852" y="149" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="860" y="125" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_29280_di" bpmnElement="Flow_29280">
+        <di:waypoint x="790" y="167" />
+        <di:waypoint x="852" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_29180_di" bpmnElement="Flow_29180">
+        <di:waypoint x="308" y="304" />
+        <di:waypoint x="870" y="304" />
+        <di:waypoint x="870" y="185" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_29220_di" bpmnElement="Flow_29220">
+        <di:waypoint x="420" y="207" />
+        <di:waypoint x="420" y="260" />
+        <di:waypoint x="740" y="260" />
+        <di:waypoint x="740" y="207" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_29240_di" bpmnElement="Flow_29240">
+        <di:waypoint x="470" y="167" />
+        <di:waypoint x="530" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_29260_di" bpmnElement="Flow_29260">
+        <di:waypoint x="630" y="167" />
+        <di:waypoint x="690" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_29200_di" bpmnElement="Flow_29200">
+        <di:waypoint x="580" y="127" />
+        <di:waypoint x="580" y="60" />
+        <di:waypoint x="420" y="60" />
+        <di:waypoint x="420" y="127" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_29300_di" bpmnElement="Flow_29300">
+        <di:waypoint x="790" y="167" />
+        <di:waypoint x="852" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_29140_di" bpmnElement="Flow_29140">
+        <di:waypoint x="290" y="192" />
+        <di:waypoint x="290" y="282" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_29120_di" bpmnElement="Flow_29120">
+        <di:waypoint x="215" y="167" />
+        <di:waypoint x="265" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_29160_di" bpmnElement="Flow_29160">
+        <di:waypoint x="315" y="167" />
+        <di:waypoint x="370" y="167" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

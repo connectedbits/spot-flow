@@ -84,12 +84,24 @@ module SpotFlow
     end
 
     describe :serialization do
-      before { @execution = context.start }
+      before { @execution = context.start(variables: {"foo": "bar"}) }
 
       let(:execution) { @execution }
+      let(:execution) { @execution }
+      let(:start_event) { execution.child_by_step_id("Start") }
+      let(:task) { execution.child_by_step_id("Task") }
+      let(:catch_event) { execution.child_by_step_id("Catch") }
+      let(:end_event) { execution.child_by_step_id("End") }
+      let(:sub_process) { execution.child_by_step_id("SubProcess") }
+      let(:sub_start_event) { sub_process.child_by_step_id("SubStart") }
+      let(:sub_task) { sub_process.child_by_step_id("SubTask") }
+      let(:sub_end_event) { sub_process.child_by_step_id("SubEnd") }
 
       it "should start the process" do
         _(execution.started?).must_equal true
+        _(start_event.ended?).must_equal true
+        _(task.waiting?).must_equal true
+        _(catch_event.waiting?).must_equal true
       end
 
       describe :serialize do
@@ -99,6 +111,8 @@ module SpotFlow
 
         it "must serialize the execution tree" do
           _(json).wont_be_nil
+          parsed_json = JSON.parse(json)
+          _(parsed_json["variables"]).must_equal("foo" => "bar")
         end
 
         describe :deserialize do
@@ -111,6 +125,7 @@ module SpotFlow
             _(restored_execution.status).must_equal execution.status
             _(restored_execution.step.id).must_equal execution.step.id
             _(restored_execution.children.length).must_equal execution.children.length
+            _(restored_execution.variables).must_equal execution.variables
           end
 
           it "should be lossless" do

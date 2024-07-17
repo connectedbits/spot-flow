@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_submission" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.25.0">
+  <bpmn:process id="submission" name="Submission" isExecutable="true">
+    <bpmn:startEvent id="submission_submitted" name="Submitted">
+      <bpmn:outgoing>Flow_28580</bpmn:outgoing>
+      <bpmn:outgoing>Flow_28580</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_submission_submitted_submitted" messageRef="Message_submitted" />
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="submission_check_jurisdiction" name="Check Jurisdiction">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="check_jurisdiction" retries="3" />
+        <zeebe:properties>
+          <zeebe:property name="action" value="check_jurisdiction" />
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#34;data&#34;: {&#34;submission_check_jurisdiction_outcome&#34;: &#34;in_jurisdiction&#34;}}" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_28580</bpmn:incoming>
+      <bpmn:incoming>Flow_28580</bpmn:incoming>
+      <bpmn:outgoing>Flow_28600</bpmn:outgoing>
+      <bpmn:outgoing>Flow_28600</bpmn:outgoing>
+      <bpmn:outgoing>Flow_28620</bpmn:outgoing>
+      <bpmn:outgoing>Flow_28620</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="submission_open_ticket" name="Open Ticket">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="open_ticket" retries="3" />
+        <zeebe:properties>
+          <zeebe:property name="action" value="open_ticket" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_28620</bpmn:incoming>
+      <bpmn:incoming>Flow_28620</bpmn:incoming>
+      <bpmn:outgoing>Flow_28640</bpmn:outgoing>
+      <bpmn:outgoing>Flow_28640</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="submission_close_ticket" name="Close Ticket">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="close_ticket" retries="3" />
+        <zeebe:properties>
+          <zeebe:property name="action" value="close_ticket" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_28600</bpmn:incoming>
+      <bpmn:incoming>Flow_28600</bpmn:incoming>
+      <bpmn:outgoing>Flow_28660</bpmn:outgoing>
+      <bpmn:outgoing>Flow_28660</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="submission_end" name="End">
+      <bpmn:incoming>Flow_28640</bpmn:incoming>
+      <bpmn:incoming>Flow_28640</bpmn:incoming>
+      <bpmn:incoming>Flow_28660</bpmn:incoming>
+      <bpmn:incoming>Flow_28660</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_submission_end" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_28580" sourceRef="submission_submitted" targetRef="submission_check_jurisdiction" />
+    <bpmn:sequenceFlow id="Flow_28600" sourceRef="submission_check_jurisdiction" targetRef="submission_close_ticket">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">="out_of_jurisdiction" = data.submission_check_jurisdiction_outcome</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_28620" sourceRef="submission_check_jurisdiction" targetRef="submission_open_ticket">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=data.submission_check_jurisdiction_outcome != "out_of_jurisdiction"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_28640" sourceRef="submission_open_ticket" targetRef="submission_end" />
+    <bpmn:sequenceFlow id="Flow_28660" sourceRef="submission_close_ticket" targetRef="submission_end" />
+  </bpmn:process>
+  <bpmn:message id="Message_submitted" name="Submitted" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="submission">
+      <bpmndi:BPMNShape id="Shape_submission_submitted_di" bpmnElement="submission_submitted">
+        <dc:Bounds x="179" y="149" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_submission_check_jurisdiction_di" bpmnElement="submission_check_jurisdiction">
+        <dc:Bounds x="370" y="127" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_submission_end_di" bpmnElement="submission_end">
+        <dc:Bounds x="852" y="149" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="860" y="125" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_submission_open_ticket_di" bpmnElement="submission_open_ticket">
+        <dc:Bounds x="570" y="127" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_submission_close_ticket_di" bpmnElement="submission_close_ticket">
+        <dc:Bounds x="570" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_28580_di" bpmnElement="Flow_28580">
+        <di:waypoint x="215" y="167" />
+        <di:waypoint x="370" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_28600_di" bpmnElement="Flow_28600">
+        <di:waypoint x="420" y="207" />
+        <di:waypoint x="420" y="310" />
+        <di:waypoint x="570" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_28620_di" bpmnElement="Flow_28620">
+        <di:waypoint x="470" y="167" />
+        <di:waypoint x="570" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_28640_di" bpmnElement="Flow_28640">
+        <di:waypoint x="670" y="167" />
+        <di:waypoint x="852" y="167" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_28660_di" bpmnElement="Flow_28660">
+        <di:waypoint x="670" y="310" />
+        <di:waypoint x="870" y="310" />
+        <di:waypoint x="870" y="185" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
