@@ -29,6 +29,10 @@ module SpotFlow
         _(sub_task).wont_be_nil
         _(sub_end_event).wont_be_nil
       end
+
+      it "should have pretty inspect" do
+        _(process.inspect).wont_be_nil
+      end
     end
 
     describe :execution do

@@ -46,6 +46,10 @@ module SpotFlow
       def process_by_id(id)
         processes.find { |process| process.id == id }
       end
+
+      def inspect
+        "#<Bpmn::Definitions @id=#{id.inspect} @name=#{name.inspect} @messages=#{messages.inspect} @signals=#{signals.inspect} @errors=#{errors.inspect} @processes=#{processes.inspect}>"
+      end
     end
   end
 end

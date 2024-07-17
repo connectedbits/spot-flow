@@ -122,6 +122,21 @@ module SpotFlow
         raise ExecutionErrorNew.new("Process must have at least one start event.") if start_event.blank?
         execution.execute_step(start_event)
       end
+
+      def inspect
+        parts = ["#<#{self.class.name.gsub(/SpotFlow::/, "")} @id=#{id.inspect} @name=#{name.inspect} @is_executable=#{is_executable.inspect}"]
+        parts << "@parent=#{parent.inspect}" if parent
+        event_attrs = (start_events + intermediate_catch_events + intermediate_throw_events + boundary_events + end_events).compact
+        parts << "@events=#{event_attrs.inspect}" unless event_attrs.blank?
+        task_attrs = (tasks + user_tasks + service_tasks + script_tasks + business_rule_tasks).compact
+        parts << "@tasks=#{task_attrs.inspect}" unless task_attrs.blank?
+        gateway_attrs = (exclusive_gateways + parallel_gateways + inclusive_gateways + event_based_gateways).compact
+        parts << "@gateways=#{gateway_attrs.inspect}" unless gateway_attrs.blank?
+        sub_process_attrs = (sub_processes + ad_hoc_sub_processes).compact
+        parts << "@sub_processes=#{sub_process_attrs.inspect}" unless sub_process_attrs.blank? 
+        parts << "@sequence_flows=#{sequence_flows.inspect}" unless sequence_flows.blank?
+        parts.join(" ") + ">"
+      end
     end
 
     class SubProcess < Process

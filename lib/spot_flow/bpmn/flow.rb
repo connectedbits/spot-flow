@@ -14,6 +14,13 @@ module SpotFlow
         @source = nil
         @target = nil
       end
+
+      def inspect
+        parts = ["#<#{self.class.name.gsub(/SpotFlow::/, "")} @id=#{id.inspect}"]
+        parts << "@source_ref=#{source_ref.inspect}" if source_ref
+        parts << "@target_ref=#{target_ref.inspect}" if target_ref
+        parts.join(" ") + ">"
+      end
     end
 
     class Association < Flow

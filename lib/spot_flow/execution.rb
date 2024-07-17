@@ -255,6 +255,25 @@ module SpotFlow
       }.transform_values(&:presence).compact
     end
 
+    def inspect
+      parts = ["#<Execution @id=#{id.inspect}"]
+      parts << "@step_type=#{step&.class&.name&.demodulize}" if step
+      parts << "@step_id=#{step.id.inspect}" if step
+      parts << "@status=#{status.inspect}" if status
+      parts << "@started_at=#{started_at.inspect}" if started_at
+      parts << "@ended_at=#{ended_at.inspect}" if ended_at
+      parts << "@attached_to_id=#{attached_to_id.inspect}" if attached_to_id
+      parts << "@variables=#{variables.inspect}" if variables.present?
+      # parts << "@tokens_in=#{tokens_in.inspect}" if tokens_in.present?
+      # parts << "@tokens_out=#{tokens_out.inspect}" if tokens_out.present?
+      parts << "@message_names=#{message_names.inspect}" if message_names.present?
+      parts << "@error_names=#{error_names.inspect}" if error_names.present?
+      parts << "@timer_expires_at=#{timer_expires_at.inspect}" if timer_expires_at
+      parts << "@condition=#{condition.inspect}" if condition
+      parts << "@children=#{children.inspect}" if children.present?
+      parts.join(" ") + ">"
+    end
+
     private
 
     def map_input_variables

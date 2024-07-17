@@ -12,6 +12,10 @@ module SpotFlow
 
         @extension_elements = ExtensionElements.new(attributes[:extension_elements]) if attributes[:extension_elements].present?
       end
+
+      def inspect
+        "#<#{self.class.name.gsub(/SpotFlow::/, "")} @id=#{id.inspect} @name=#{name.inspect}>"
+      end
     end
 
     class Message < Element

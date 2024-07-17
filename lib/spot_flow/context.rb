@@ -96,5 +96,13 @@ module SpotFlow
     def dmn_definitions_by_decision_id(decision_id)
       dmn_definitions.find { |definitions| definitions.decisions.find { |decision| decision.id == decision_id } }
     end
+
+    def inspect
+      parts = ["#<Context"]
+      parts << "@processes=#{processes.inspect}" if processes.present?
+      parts << "@decisions=#{decisions.inspect}" if decisions.present?
+      parts << "@executions=#{executions.inspect}" if executions.present?
+      parts.join(" ") + ">"
+    end
   end
 end

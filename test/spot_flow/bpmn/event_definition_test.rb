@@ -4,6 +4,20 @@ require "test_helper"
 
 module SpotFlow
   module Bpmn
+    describe ConditionalEventDefinition do
+      let(:sources) { fixture_source("conditional_event_defintion_test.bpmn") }
+      let(:context) { SpotFlow.new(sources) }
+
+      describe :definitions do
+        let(:process) { context.process_by_id("ConditionalEventDefinitionTest") }
+        let(:start_event) { process.element_by_id("Start") }
+
+        it "should parse the terminate end event" do
+          _(process).wont_be_nil
+        end
+      end
+    end
+
     describe ErrorEventDefinition do
       let(:sources) { fixture_source("error_event_definition_test.bpmn") }
       let(:context) { SpotFlow.new(sources) }

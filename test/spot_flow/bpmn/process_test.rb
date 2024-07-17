@@ -18,6 +18,10 @@ module SpotFlow
           _(start_event).wont_be_nil
           _(end_event).wont_be_nil
         end
+
+        it "should have pretty inspect" do
+          _(process.inspect).wont_be_nil
+        end
       end      
     end
 

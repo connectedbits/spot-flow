@@ -23,6 +23,10 @@ module SpotFlow
             _(definitions.errors.count).must_equal(0)
             _(definitions.processes.count).must_equal(1)
           end
+
+          it "should have pretty inspect output" do
+            _(definitions.inspect).wont_be_nil
+          end
         end
       end
     end
