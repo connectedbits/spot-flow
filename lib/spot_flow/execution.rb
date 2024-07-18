@@ -35,11 +35,15 @@ module SpotFlow
       end
     end
 
+    def gen_uid
+      rand(36**8).to_s(36)
+    end
+
     def initialize(attributes={})
       attributes.each do |k, v|
         send("#{k}=", v)
       end
-      @id ||= SecureRandom.uuid
+      @id ||= gen_uid
       @status ||= "activated"
       @variables = @variables&.with_indifferent_access || {}.with_indifferent_access
       @tokens_in ||= []
