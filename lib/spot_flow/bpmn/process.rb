@@ -164,14 +164,14 @@ module SpotFlow
 
       def execute(execution)
         if extension_elements&.called_element&.process_id&.start_with?("=")
-          @process_id = SpotFeel.evaluate(extension_elements.called_element.process_id, variables: execution.variables)
+          @process_id = SpotFeel.evaluate(extension_elements&.called_element&.process_id, variables: execution.variables)
         else
-          @process_id = extension_elements.called_element.process_id
+          @process_id = extension_elements&.called_element&.process_id
         end
 
         execution.wait
 
-        process = execution.context.process_by_id(@process_id)
+        process = execution.context.process_by_id(@process_id) if @process_id
         execution.execute_step(process.default_start_event) if process
       end
     end
