@@ -160,14 +160,16 @@ module SpotFlow
     end
 
     class CallActivity < Activity
+      attr_reader :process_id
+
       def execute(execution)
         if extension_elements&.called_element&.process_id&.start_with?("=")
-          process_id = SpotFeel.evaluate(extension_elements.called_element.process_id, variables: execution.variables)
+          @process_id = SpotFeel.evaluate(extension_elements.called_element.process_id, variables: execution.variables)
         else
-          process_id = extension_elements.called_element.process_id
+          @process_id = extension_elements.called_element.process_id
         end
 
-        execution.call(process_id)
+        process = execution.context.process_by_id(@process_id)
       end
     end
   end

@@ -190,8 +190,8 @@ module SpotFlow
       end
     end
 
-    def call(process_id)
-      execute_step(context.process_by_id(process_id))
+    def call(process)
+      execute_step(process, attached_to: self)
     end
 
     #
@@ -343,6 +343,9 @@ module SpotFlow
       str = "#{str} * in: #{child.tokens_in.join(', ')}" if child.tokens_in.present?
       str = "#{str} * out: #{child.tokens_out.join(', ')}" if child.tokens_out.present?
       puts str
+      child.children.each_with_index do |grandchild, grandindex|
+        print_child(grandchild, "#{index}.#{grandindex}")
+      end
     end
 
     def print_variables

@@ -52,10 +52,12 @@ module SpotFlow
 
         let (:execution) { @execution }
         let (:call_activity) { execution.child_by_step_id("CallActivity") }
+        let (:callee_task) { call_activity.child_by_step_id("Task") }
 
-        it "should wait at the call activity" do
-          #execution.print
+        it "should wait at the call activity and start the child process" do
+          execution.print
           #_(call_activity.waiting?).must_equal true
+          # _(callee_task.waiting?).must_equal true
         end
       end
     end
