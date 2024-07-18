@@ -1,32 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0m4ul3w" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0m4ul3w" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.25.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
   <bpmn:process id="ProcessTest" name="Process Test" isExecutable="true">
     <bpmn:startEvent id="Start" name="Start">
       <bpmn:outgoing>Flow_1qhq8g6</bpmn:outgoing>
     </bpmn:startEvent>
     <bpmn:endEvent id="End" name="End">
-      <bpmn:incoming>Flow_1qhq8g6</bpmn:incoming>
+      <bpmn:incoming>Flow_1xz3w5s</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1qhq8g6" sourceRef="Start" targetRef="End" />
+    <bpmn:sequenceFlow id="Flow_1qhq8g6" sourceRef="Start" targetRef="SubProcess" />
+    <bpmn:subProcess id="SubProcess" name="Sub Process">
+      <bpmn:incoming>Flow_1qhq8g6</bpmn:incoming>
+      <bpmn:outgoing>Flow_1xz3w5s</bpmn:outgoing>
+      <bpmn:startEvent id="SubStart" name="Sub Start">
+        <bpmn:outgoing>Flow_00wmumt</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:endEvent id="SubEnd" name="Sub End">
+        <bpmn:incoming>Flow_16h5hth</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_16h5hth" sourceRef="CallActivity" targetRef="SubEnd" />
+      <bpmn:sequenceFlow id="Flow_00wmumt" sourceRef="SubStart" targetRef="CallActivity" />
+      <bpmn:callActivity id="CallActivity" name="Call Activity">
+        <bpmn:incoming>Flow_00wmumt</bpmn:incoming>
+        <bpmn:outgoing>Flow_16h5hth</bpmn:outgoing>
+      </bpmn:callActivity>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_1xz3w5s" sourceRef="SubProcess" targetRef="End" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="ProcessTest">
-      <bpmndi:BPMNEdge id="Flow_1qhq8g6_di" bpmnElement="Flow_1qhq8g6">
-        <di:waypoint x="215" y="97" />
-        <di:waypoint x="272" y="97" />
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="Start">
-        <dc:Bounds x="179" y="79" width="36" height="36" />
+        <dc:Bounds x="179" y="159" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="185" y="122" width="24" height="14" />
+          <dc:Bounds x="185" y="202" width="24" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0xe52om_di" bpmnElement="End">
-        <dc:Bounds x="272" y="79" width="36" height="36" />
+        <dc:Bounds x="722" y="159" width="36" height="36" />
         <bpmndi:BPMNLabel>
-          <dc:Bounds x="280" y="122" width="20" height="14" />
+          <dc:Bounds x="730" y="202" width="20" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0jzf9qz_di" bpmnElement="SubProcess" isExpanded="true">
+        <dc:Bounds x="290" y="77" width="350" height="200" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_12pac7w_di" bpmnElement="SubStart">
+        <dc:Bounds x="330" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="325" y="202" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1qcd0v0_di" bpmnElement="SubEnd">
+        <dc:Bounds x="572" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="569" y="202" width="43" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0eq6e2p_di" bpmnElement="CallActivity">
+        <dc:Bounds x="420" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_16h5hth_di" bpmnElement="Flow_16h5hth">
+        <di:waypoint x="520" y="177" />
+        <di:waypoint x="572" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00wmumt_di" bpmnElement="Flow_00wmumt">
+        <di:waypoint x="366" y="177" />
+        <di:waypoint x="420" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qhq8g6_di" bpmnElement="Flow_1qhq8g6">
+        <di:waypoint x="215" y="177" />
+        <di:waypoint x="290" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xz3w5s_di" bpmnElement="Flow_1xz3w5s">
+        <di:waypoint x="640" y="177" />
+        <di:waypoint x="722" y="177" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>
