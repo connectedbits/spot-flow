@@ -169,7 +169,10 @@ module SpotFlow
           @process_id = extension_elements.called_element.process_id
         end
 
+        execution.wait
+
         process = execution.context.process_by_id(@process_id)
+        execution.execute_step(process.default_start_event) if process
       end
     end
   end
